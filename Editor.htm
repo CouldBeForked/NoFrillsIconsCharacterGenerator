@@ -93,7 +93,7 @@ option.hover {
     .concat(movementPowers.unique())
     .concat(offensivePowers.unique())
     .concat(sensoryPowers.unique());
-  allPowers = allPowers.sort();
+  allPowers = [" "].concat(allPowers.sort());
 
   var specialties = ["Aerial Combat", "Art", "Athletics", "Athletics",
     "Business", "Drive", "Investigation", "Investigation", "Law",
@@ -563,23 +563,23 @@ option.hover {
           <th colspan=2>Powers (<span id='powerValue'></span>)</th>
         </tr>
         <tr>
-          <td id="power0"></td>
+          <td id="power0" class="powerSelector"></td>
           <td id="powerLevel0" class="power"></td>
         </tr>
         <tr>
-          <td id="power1"></td>
+          <td id="power1" class="powerSelector"></td>
           <td id="powerLevel1" class="power"></td>
         </tr>
         <tr>
-          <td id="power2"></td>
+          <td id="power2" class="powerSelector"></td>
           <td id="powerLevel2" class="power"></td>
         </tr>
         <tr>
-          <td id="power3"></td>
+          <td id="power3" class="powerSelector"></td>
           <td id="powerLevel3" class="power"></td>
         </tr>
         <tr>
-          <td id="power4"></td>
+          <td id="power4" class="powerSelector"></td>
           <td id="powerLevel4" class="power"></td>
         </tr>
         <tr>
@@ -614,6 +614,13 @@ option.hover {
 			calcDudeValue(currentDude);
 			displayDude(currentDude);
 		});
+  });
+  $('.powerSelector').each(function (index, element){
+		  var ddd = $("<select>")
+		  jQuery.each(allPowers, function(index, value) {
+		    ddd.append("<option>" +value +"</option>");
+		  });
+		  $(element).append(ddd);
   });
 </script>
 
