@@ -349,6 +349,15 @@ option.hover {
   }
 
 
+  var calcDudeValue = function(dude) {
+    dude.attributeValue = dude.prowess + dude.coordination + dude.strength + dude.intellect + dude.awareness + dude.willpower;
+    dude.powerValue = 0;
+    for (var x = 0; x < dude.powers.length; x++) {
+      dude.powerValue += dude.powers[x].level;
+    };
+    dude.specValue = dude.specs.length
+    dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
+  }
 
   var buildDude = function(s) {
     var dude = {};
@@ -376,21 +385,14 @@ option.hover {
       dude.specs.push(randomSpec());
     };
 
-    dude.attribiuteValue = dude.prowess + dude.coordination + dude.strength + dude.intellect + dude.awareness + dude.willpower;
-    dude.powerValue = 0;
-    for (var x = 0; x < np; x++) {
-      dude.powerValue += dude.powers[x].level;
-    };
-    dude.specValue = dude.specs.length;
-
-    dude.value = totalValue;
+    calcDudeValue(dude);
 
     return dude;
   };
 
   var displayDude = function(dude) {
 
-    $("#attributeValue").text( dude.attribiuteValue );
+    $("#attributeValue").text( dude.attributeValue );
     $("#origin").text( dude.origin );
     $("#prowess").text( levelDescription(dude.prowess) );
     $("#coordination").text( levelDescription(dude.coordination) );
@@ -428,6 +430,7 @@ option.hover {
     }
     displayDude(dude);
     appendLog(dude);
+    currentDude=dude;
     
     seed = Date.now();
   }
@@ -458,6 +461,7 @@ option.hover {
     col.append(entry);
 
     entry.click(function() {
+      currentDude = d;		    
       displayDude(d);
     });
 
@@ -494,7 +498,7 @@ option.hover {
 <input type="text" id="seedIn">
 <button onclick="regenerate()">Regenerate!</button>
 <hr>
-<table>
+<table style="height:600px;">
   <tr>
     <th>History</th>
     <th>Character</th>
@@ -597,6 +601,7 @@ option.hover {
 
 <script>
   seed = Date.now()
+  var currentDude = {};	
 
   var dudes = [];
 </script>
