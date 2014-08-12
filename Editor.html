@@ -1,12 +1,12 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
 <script src="jquery.min.js"></script>
 
 <style>
 option.hover {
-    background: black;
-    color: white;
-  }
-
+	background: black;
+	color: white;
+}
 </style>
 
 <script>
@@ -32,7 +32,7 @@ option.hover {
     return Math.floor((randomDave() * 100000) % 6 + 1);
   };
 
-  var levels = ["Weak", "Poor", "Average", "Fair", "Good", "Great",
+  var levels = ["", "Weak", "Poor", "Average", "Fair", "Good", "Great",
     "Incredible", "Amazing", "Fantastic", "Supreme"
   ];
 
@@ -239,7 +239,11 @@ option.hover {
   };
 
   var levelDescription = function(l) {
-    return "" + levels[l-1] + " (" + l + ")";
+	  if ( l === 0) {
+	    	return "";		  
+	  } else {
+    	return "" + levels[l] + " (" + l + ")";
+  	}
   }
 
   var randomOrigin = function() {
@@ -355,6 +359,39 @@ option.hover {
     dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
   }
 
+  var buildNullDude = function() {
+	    var dude = {};
+	    totalValue = 0;
+
+	    dude.id = "null";
+	    dude.origin = "";
+	    dude.prowess = 0;
+	    dude.coordination = 0;
+	    dude.strength = 0;
+	    dude.intellect = 0;
+	    dude.awareness = 0;
+	    dude.willpower = 0;
+	    dude.powers = [];
+
+	    for (var x = 0; x < 5; x++) {
+	        var p = {};
+	        p.power = "";
+	        p.level = 0;
+	        dude.powers.push(p);
+	      };
+	    dude.specs = [];
+	    var ns = 0;
+	    for (var x = 0; x < ns; x++) {
+	      dude.specs.push(randomSpec());
+	    };
+
+	    calcDudeValue(dude);
+
+	    return dude;
+	  };
+
+  
+  
   var buildDude = function(s) {
     var dude = {};
     totalValue = 0;
@@ -368,13 +405,20 @@ option.hover {
     dude.awareness = randomLevel();
     dude.willpower = randomLevel();
     dude.powers = [];
+
     var np = randomNumPow();
     for (var x = 0; x < np; x++) {
-      var p = {};
-      p.power = randomPower();
-      p.level = randomLevel();
-      dude.powers.push(p);
-    };
+        var p = {};
+        p.power = randomPower();
+        p.level = randomLevel();
+        dude.powers.push(p);
+      };
+      for (var x = np; x < 5; x++) {
+          var p = {};
+          p.power = "";
+          p.level = 0;
+          dude.powers.push(p);
+      }
     dude.specs = [];
     var ns = randomNumSpec();
     for (var x = 0; x < ns; x++) {
@@ -401,12 +445,12 @@ option.hover {
     $("#powerValue").text( dude.powerValue );
     var np = dude.powers.length;
     for (var x = 0; x < np; x++) {
-      $("#power" + x).text( dude.powers[x].power );
-      $("#powerLevel" + x).text( levelDescription(dude.powers[x].level) );
+      $("#power" + x + ">select").val( dude.powers[x].power );
+      $("#powerLevel" + x+ ">select").val( dude.powers[x].level );
     };
     for (var x = np; x < 5; x++) {
-      $("#power" + x).text( "" );
-      $("#powerLevel" + x).text( "" );
+      $("#power" + x+ ">select").val( "" );
+      $("#powerLevel" + x+ ">select").val( 0 );
     };
 
     $("#specValue").text( dude.specValue );
@@ -478,122 +522,123 @@ option.hover {
   }
   
 </script>
-<h3> Either...</h3>
-<br>Generate a Hero based on point level
+<h3>Either...</h3>
+<br>
+Generate a Hero based on point level
 <select id="limit">
-  <option value="0">Unlimited</option>
-  <option value="30">30</option>
-  <option value="35">35</option>
-  <option value="40">40</option>
-  <option value="45">45</option>
-  <option value="50">50</option>
-  <option value="55">55</option>
-  <option value="60">60</option>
+	<option value="0">Unlimited</option>
+	<option value="30">30</option>
+	<option value="35">35</option>
+	<option value="40">40</option>
+	<option value="45">45</option>
+	<option value="50">50</option>
+	<option value="55">55</option>
+	<option value="60">60</option>
 </select>
 <button onclick="generate()">Generate!</button>
-<h3>...or...</h3>
-<br>Enter a Hero's ID # to regenerate them
-<input type="text" id="seedIn">
-<button onclick="regenerate()">Regenerate!</button>
 <hr>
-<table style="height:600px;">
-  <tr>
-    <th>History</th>
-    <th>Character</th>
-  </tr>
-  <tr>
-   <td width=150 valign=top><select style="width:20em;height:100%;" id='history' multiple></select> </td>
-    <td valign=top>
-      <table width=320>
-        <tr>
-          <th width=150>Identification</th>
-          <th width=100>&nbsp;</th>
-        </tr>
-        <tr>
-          <td>ID</td>
-          <td id="seed"></td>
-        </tr>
-        <tr>
-          <td>Level</td>
-          <td id="level"></td>
-        </tr>
-        <tr>
-          <td colspan=2>&nbsp;</td>
-        </tr>
-        <tr>
-          <th colspan=2>Origin</th>
-        </tr>
-        <tr>
-          <td colspan=2 id="origin"></td>
-        </tr>
-        <tr>
-          <td colspan=2>&nbsp;</td>
-        </tr>
-        <tr>
-          <th colspan=2>Attributes (<span id='attributeValue'></span>)</th>
-        </tr>
-        <tr>
-          <td>Prowess</td>
-          <td id="prowess" class="power" ></td>
-        </tr>
-        <tr>
-          <td>Coordination</td>
-          <td id="coordination" class="power"></td>
-        </tr>
-        <tr>
-          <td>Strength</td>
-          <td id="strength" class="power"></td>
-        </tr>
-        <tr>
-          <td>Intellect</td>
-          <td id="intellect" class="power"></td>
-        </tr>
-        <tr>
-          <td>Awareness</td>
-          <td id="awareness" class="power"></td>
-        </tr>
-        <tr>
-          <td>Willpower</td>
-          <td id="willpower" class="power"></td>
-        </tr>
-        <tr>
-          <td colspan=2>&nbsp;</td>
-        </tr>
-        <tr>
-          <th colspan=2>Powers (<span id='powerValue'></span>)</th>
-        </tr>
-        <tr>
-          <td id="power0" class="powerSelector"></td>
-          <td id="powerLevel0" class="power"></td>
-        </tr>
-        <tr>
-          <td id="power1" class="powerSelector"></td>
-          <td id="powerLevel1" class="power"></td>
-        </tr>
-        <tr>
-          <td id="power2" class="powerSelector"></td>
-          <td id="powerLevel2" class="power"></td>
-        </tr>
-        <tr>
-          <td id="power3" class="powerSelector"></td>
-          <td id="powerLevel3" class="power"></td>
-        </tr>
-        <tr>
-          <td id="power4" class="powerSelector"></td>
-          <td id="powerLevel4" class="power"></td>
-        </tr>
-        <tr>
-          <td colspan=2>&nbsp;</td>
-        </tr>
-        <tr>
-          <th colspan=2>Specialties (<span id='specValue'></span>)</th>
-          </th>
-          <tr>
-            <td colspan=2 id="specialties"></td>
-          </tr>
-      </table>
-    </td>
-    </tr>
+<table style="height: 600px;">
+	<tr>
+		<th>History</th>
+		<th>Character</th>
+	</tr>
+	<tr>
+		<td width=150 valign=top><select
+			style="width: 20em; height: 100%;" id='history' multiple></select></td>
+		<td valign=top>
+			<table width=320>
+				<tr>
+					<th width=150>Identification</th>
+					<th width=100>&nbsp;</th>
+				</tr>
+				<tr>
+					<td>ID</td>
+					<td id="seed"></td>
+				</tr>
+				<tr>
+					<td>Level</td>
+					<td id="level"></td>
+				</tr>
+				<tr>
+					<td colspan=2>&nbsp;</td>
+				</tr>
+				<tr>
+					<th colspan=2>Origin</th>
+				</tr>
+				<tr>
+					<td colspan=2 id="origin"></td>
+				</tr>
+				<tr>
+					<td colspan=2>&nbsp;</td>
+				</tr>
+				<tr>
+					<th colspan=2>Attributes (<span id='attributeValue'></span>)
+					</th>
+				</tr>
+				<tr>
+					<td>Prowess</td>
+					<td id="prowess" class="power"></td>
+				</tr>
+				<tr>
+					<td>Coordination</td>
+					<td id="coordination" class="power"></td>
+				</tr>
+				<tr>
+					<td>Strength</td>
+					<td id="strength" class="power"></td>
+				</tr>
+				<tr>
+					<td>Intellect</td>
+					<td id="intellect" class="power"></td>
+				</tr>
+				<tr>
+					<td>Awareness</td>
+					<td id="awareness" class="power"></td>
+				</tr>
+				<tr>
+					<td>Willpower</td>
+					<td id="willpower" class="power"></td>
+				</tr>
+				<tr>
+					<td colspan=2>&nbsp;</td>
+				</tr>
+				<tr>
+					<th colspan=2>Powers (<span id='powerValue'></span>)
+					</th>
+				</tr>
+				<tr>
+					<td id="power0" class="powerSelector"></td>
+					<td id="powerLevel0" class="power"></td>
+				</tr>
+				<tr>
+					<td id="power1" class="powerSelector"></td>
+					<td id="powerLevel1" class="power"></td>
+				</tr>
+				<tr>
+					<td id="power2" class="powerSelector"></td>
+					<td id="powerLevel2" class="power"></td>
+				</tr>
+				<tr>
+					<td id="power3" class="powerSelector"></td>
+					<td id="powerLevel3" class="power"></td>
+				</tr>
+				<tr>
+					<td id="power4" class="powerSelector"></td>
+					<td id="powerLevel4" class="power"></td>
+				</tr>
+				<tr>
+					<td colspan=2>&nbsp;</td>
+				</tr>
+				<tr>
+					<th colspan=2>Specialties (<span id='specValue'></span>)
+					</th>
+					</th>
+				<tr>
+					<td colspan=2 id="specialties"></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
 </table>
 <div id='log'></div>
 
@@ -604,15 +649,26 @@ option.hover {
   $('.power').each(function (index, element){
 		  var ddd = $("<select>")
 		  jQuery.each(levels, function(index, value) {
-		    ddd.append("<option value="+(index+1)+">" +value+ " ("+ (index+1) +")</option>");
+			  if (index ===0) {
+				    ddd.append("<option value="+ index + ">" +value+ "</option>");
+			  } else {
+				    ddd.append("<option value="+index+">" +value+ " ("+ (index) +")</option>");				  
+			  }
 		  });
 		  $(element).append(ddd);
 		  $(element).change(function(){
 			var i = element.id;
 			var d = $(ddd).val();
-			currentDude[i] = parseInt(d);
-			calcDudeValue(currentDude);
-			displayDude(currentDude);
+			if (i.indexOf("powerLevel") == -1) {
+				currentDude[i] = parseInt(d);
+				calcDudeValue(currentDude);
+				displayDude(currentDude);				
+			} else {
+				var l = parseInt(i.replace("powerLevel", ""));
+				currentDude.powers[l].level = parseInt(d);
+				calcDudeValue(currentDude);
+				displayDude(currentDude);					
+			}
 		});
   });
   $('.powerSelector').each(function (index, element){
@@ -621,7 +677,19 @@ option.hover {
 		    ddd.append("<option>" +value +"</option>");
 		  });
 		  $(element).append(ddd);
+		  $(element).change(function(){
+				var i = element.id;
+				var d = $(ddd).val();
+				var l = parseInt(i.replace("power", ""));
+				currentDude.powers[l].power = d;
+				calcDudeValue(currentDude);
+				displayDude(currentDude);		
+		  });
+		  
   });
+  
+  currentDude = buildNullDude();
+  displayDude(currentDude);
 </script>
 
 
