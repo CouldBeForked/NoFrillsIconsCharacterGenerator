@@ -21,6 +21,11 @@ option.hover {
     return a;
   };
 
+
+
+  var dudes = [];
+  var currentDude = {};	
+
   var seed = 1;
 
   function randomDave() {
@@ -359,11 +364,12 @@ option.hover {
     dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
   }
 
-  var buildNullDude = function() {
+  var buildNullDude = function(seed) {
 	    var dude = {};
 	    totalValue = 0;
 
-	    dude.id = "null";
+	    dude.id = seed;
+	    dude.name = "Unnamed - " + seed;
 	    dude.origin = "";
 	    dude.prowess = 0;
 	    dude.coordination = 0;
@@ -387,6 +393,7 @@ option.hover {
 
 	    calcDudeValue(dude);
 
+    seed = Date.now();
 	    return dude;
 	  };
 
@@ -397,6 +404,7 @@ option.hover {
     totalValue = 0;
 
     dude.id = s;
+    dude.name = "Unnamed - " + seed;
     dude.origin = randomOrigin();
     dude.prowess = randomLevel();
     dude.coordination = randomLevel();
@@ -427,6 +435,7 @@ option.hover {
 
     calcDudeValue(dude);
 
+    seed = Date.now();
     return dude;
   };
 
@@ -455,10 +464,8 @@ option.hover {
 
     $("#specValue").text( dude.specValue );
     $("#specialties").text( dude.specs.join(', ') );
-    $("#seed").text( dude.id );
+    $("#charId").val( dude.name );
     $("#level").text(dude.value);
-
-    seed = Date.now();
   }
 
   var generate = function() {
@@ -471,35 +478,23 @@ option.hover {
       dude = buildDude(seed);
     }
     displayDude(dude);
-    appendLog(dude);
     currentDude=dude;
     
     seed = Date.now();
   }
 
-  var regenerate = function() {
-    var zzz = $("#seedIn").val();
-    if (zzz != null && zzz != "") {
-      seed = $("#seedIn").val();
-      $("#seedIn").val("");
-    } else {
-      return;
-    }
-    var dude = buildDude(seed);
+  var createNew = function() {
+    var dude = buildNullDude(seed);
     displayDude(dude);
+    currentDude=dude;
     seed = Date.now();
   }
 
-  var recall = function(s) {
-    $("#seedIn").val(s);
-    regenerate();
-  };
-
 
   var appendLog = function(d) {
-    var s = d.id;
+    var s = d.name;
     var col = $('#history');
-    var entry = $("<option id='" + s + "'>" + s + " (" + d.value + ")</option>");
+    var entry = $("<option id='" + d.id + "'>" + d.name + "</option>");
     col.append(entry);
 
     entry.click(function() {
@@ -521,10 +516,29 @@ option.hover {
     var log = $('#log').append("<div>"+ l +"</div");
   }
   
+  var saveDude = function(dude) {
+    var foundIt = false;
+    $.each(dudes, function (index, value) {
+	if (dude.id === value.id) {
+	  foundIt = true;
+	  return false;
+        };
+    });
+    if (foundIt === false) {
+      dudes.push(dude);
+    }
+    dudes.sort();
+    $("#history").empty();
+    $.each(dudes, function (index, value) {
+	    appendLog(value);
+    });
+  }
+
+
 </script>
 <h3>Either...</h3>
 <br>
-Generate a Hero based on point level
+<P>Generate a Hero based on point level
 <select id="limit">
 	<option value="0">Unlimited</option>
 	<option value="30">30</option>
@@ -536,6 +550,9 @@ Generate a Hero based on point level
 	<option value="60">60</option>
 </select>
 <button onclick="generate()">Generate!</button>
+<P>Create a new Hero <button onclick="createNew();">Create New</button>
+<P>Save a hero to the sidebar<button onclick="saveDude(currentDude);">Save</button>
+
 <hr>
 <table style="height: 600px;">
 	<tr>
@@ -553,7 +570,7 @@ Generate a Hero based on point level
 				</tr>
 				<tr>
 					<td>ID</td>
-					<td id="seed"></td>
+					<td ><input id="charId" type="text" style="width:15em;"></input</td>
 				</tr>
 				<tr>
 					<td>Level</td>
@@ -644,7 +661,7 @@ Generate a Hero based on point level
 
 <script>
   seed = Date.now()
-  var currentDude = {};	
+
 
   $('.power').each(function (index, element){
 		  var ddd = $("<select>")
@@ -687,8 +704,12 @@ Generate a Hero based on point level
 		  });
 		  
   });
+
+  $("#charId").change(function(data){
+		  currentDude.name = $(this).val();
+  });
   
-  currentDude = buildNullDude();
+  currentDude = buildDude(seed);
   displayDude(currentDude);
 </script>
 
