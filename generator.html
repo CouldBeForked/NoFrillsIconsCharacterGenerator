@@ -494,9 +494,12 @@ Generate a Hero based on point level
 Enter a Hero's ID # to regenerate them
 <input type="text" id="seedIn">
 <button onclick="regenerate()">Regenerate!</button>
+<P>
+	Print a Hero
+	<button onclick="printDiv('printableArea')" value="print a div!">Print!</button>
 <hr>
 <table style="height: 600px;">
-	<tr>
+	<tr style="height: 2em;">
 		<th>History</th>
 		<th>Character</th>
 	</tr>
@@ -507,8 +510,7 @@ Enter a Hero's ID # to regenerate them
 			<div id="printableArea">
 				<table width=320>
 					<tr>
-						<th width=150>Identification</th>
-						<th width=100>&nbsp;</th>
+						<th colspan=2 >Identification</th>
 					</tr>
 					<tr>
 						<td>ID</td>
