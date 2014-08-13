@@ -1,5 +1,3 @@
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
 <script src="jquery.min.js"></script>
 
 <style>
@@ -10,549 +8,541 @@ option.hover {
 </style>
 
 <script>
-  Array.prototype.unique = function() {
-    var a = this.concat();
-    for (var i = 0; i < a.length; ++i) {
-      for (var j = i + 1; j < a.length; ++j) {
-        if (a[i] === a[j])
-          a.splice(j--, 1);
-      }
-    }
-    return a;
-  };
-
-
-
-  var dudes = [];
-  var currentDude = {};	
-
-  var seed = 1;
-
-  function randomDave() {
-    var x = Math.sin(seed++) * 10000;
-    return x - Math.floor(x);
-  }
-
-  var roll = function() {
-    return Math.floor((randomDave() * 100000) % 6 + 1);
-  };
-
-  var levels = ["", "Weak", "Poor", "Average", "Fair", "Good", "Great",
-    "Incredible", "Amazing", "Fantastic", "Supreme"
-  ];
-
-  var origins = ["Trained", "Transformed",
-    "Birthright", "Gimmick", "Artificial", "Unearthly"
-  ];
-
-  var alterationPowers = ["Ability Boost",
-    "Ability Increase", "Alter Ego", "Alternate Form", "Aquatic",
-    "Density", "Duplication", "Extra Body Parts", "Growth",
-    "Invisibility", "Phasing", "Shrinking", "Animal Mimicry",
-    "Material Mimicry", "Plant Mimicry", "Power Mimicry", "Stretching",
-    "Transformation"
-  ];
-
-  var controlPowers = ["Alteration Ray",
-    "Alteration Ray", "Element Control", "Element Control",
-    "Probability Control", "Time Control", "Energy Control",
-    "Energy Control", "Healing", "Telekinesis", "Telekinesis",
-    "Transmutation", "Cosmic Power", "Gadgets", "Gadgets", "Magic",
-    "Nullification", "Servant"
-  ];
-
-  var defensivePowers = ["Absorption",
-    "Absorption", "Adaptation", "Force Field", "Force Field",
-    "Force Field", "Immortality", "Life Support", "Life Support",
-    "Life Support", "Reflection", "Reflection", "Regeneration",
-    "Regeneration", "Resistance", "Resistance", "Resistance",
-    "Resistance"
-  ];
-
-  var mentalPowers = ["Astral Projection",
-    "Dream Control", "Emotion Control", "Emotion Control", "Illusion",
-    "Images", "Mental Blast", "Mental Blast", "Mind Control",
-    "Mind Shield", "Telepathy", "Telepathy"
-  ];
-
-  var movementPowers = ["Burrowing",
-    "Dimensional Travel", "Flight", "Flight", "Leaping", "Leaping",
-    "Spinning", "Super-Speed", "Super-Speed", "Swinging",
-    "Teleportation", "Wall-Crawling"
-  ];
-
-  var offensivePowers = ["Affliction", "Binding",
-    "Blast", "Blast", "Strike", "Strike", "Aura", "Dazzle", "Dazzle",
-    "Energy Drain", "Fast Attack", "Stunning"
-  ];
-
-  var sensoryPowers = ["Detection", "Detection",
-    "ESP", "Super-Senses", "Super-Senses", "Super-Senses",
-    "Danger Sense", "Danger Sense", "Interface", "Postcognition",
-    "Precognition", "Precognition"
-  ];
-
-  var allPowers = alterationPowers.concat(controlPowers.unique())
-    .concat(defensivePowers.unique())
-    .concat(mentalPowers.unique())
-    .concat(movementPowers.unique())
-    .concat(offensivePowers.unique())
-    .concat(sensoryPowers.unique());
-  allPowers = [" "].concat(allPowers.sort());
-
-  var specialties = ["Aerial Combat", "Art", "Athletics", "Athletics",
-    "Business", "Drive", "Investigation", "Investigation", "Law",
-    "Leadership", "Leadership", "Linguistics", "Martial Arts",
-    "Martial Arts", "Medicine", "Mental Resistance", "Mental Resistance",
-    "Military", "Occult", "Performance", "Pilot", "Power", "Power", "Power",
-    "Psychiatry", "Science", "Science", "Sleight of Hand", "Stealth",
-    "Stealth", "Technology", "Technology", "Underwater Combat", "Weapons",
-    "Wrestling", "Wrestling"
-  ];
-
-  var allSpecialties = specialties.unique().sort();
-
-  var alteration = function(r1, r2) {
-    switch (r1) {
-      case 1:
-      case 2:
-        return alterationPowers[r2 - 1];
-      case 3:
-      case 4:
-        return alterationPowers[6 + r2 - 1];
-      case 5:
-      case 6:
-        return alterationPowers[12 + r2 - 1];
-    }
-    return "NO POWER";
-  };
-
-  var control = function(r1, r2) {
-    switch (r1) {
-      case 1:
-      case 2:
-        return controlPowers[r2 - 1];
-      case 3:
-      case 4:
-        return controlPowers[6 + r2 - 1];
-      case 5:
-      case 6:
-        return controlPowers[12 + r2 - 1];
-    }
-    return "NO POWER";
-  };
-
-  var defensive = function(r1, r2) {
-    switch (r1) {
-      case 1:
-      case 2:
-        return defensivePowers[r2 - 1];
-      case 3:
-      case 4:
-        return defensivePowers[6 + r2 - 1];
-      case 5:
-      case 6:
-        return defensivePowers[12 + r2 - 1];
-    }
-    return "NO POWER";
-  };
-
-  var mental = function(r1, r2) {
-    switch (r1) {
-      case 1:
-      case 2:
-      case 3:
-        return mentalPowers[r2 - 1];
-      case 4:
-      case 5:
-      case 6:
-        return mentalPowers[6 + r2 - 1];
-    }
-    return "NO POWER";
-  };
-
-  var movement = function(r1, r2) {
-    switch (r1) {
-      case 1:
-      case 2:
-      case 3:
-        return movementPowers[r2 - 1];
-      case 4:
-      case 5:
-      case 6:
-        return movementPowers[6 + r2 - 1];
-    }
-    return "NO POWER";
-  };
-
-  var offensive = function(r1, r2) {
-    switch (r1) {
-      case 1:
-      case 2:
-      case 3:
-        return offensivePowers[r2 - 1];
-      case 4:
-      case 5:
-      case 6:
-        return offensivePowers[6 + r2 - 1];
-    }
-    return "NO POWER";
-  }
-
-  var sensory = function(r1, r2) {
-    switch (r1) {
-      case 1:
-      case 2:
-      case 3:
-        return sensoryPowers[r2 - 1];
-      case 4:
-      case 5:
-      case 6:
-        return sensoryPowers[6 + r2 - 1];
-    }
-    return "NO POWER";
-  }
-
-
-  var levelScore = function(r) {
-    switch (r) {
-      case 2:
-        return 1;
-      case 3:
-        return 2;
-      case 4:
-        return 3;
-      case 5:
-      case 6:
-        return 4;
-      case 7:
-      case 8:
-        return 5;
-      case 9:
-      case 10:
-        return 6;
-      case 11:
-        return 7;
-      case 12:
-        return 8;
-    };
-  };
-
-  function randomLevel() {
-    var l = levelScore(roll() + roll());
-    return l;
-  };
-
-  var levelDescription = function(l) {
-	  if ( l === 0) {
-	    	return "";		  
-	  } else {
-    	return "" + levels[l] + " (" + l + ")";
-  	}
-  }
-
-  var randomOrigin = function() {
-    switch (roll() + roll()) {
-      case 2:
-      case 3:
-      case 4:
-        return origins[0];
-      case 5:
-      case 6:
-        return origins[1];
-      case 7:
-        return origins[2];
-      case 8:
-      case 9:
-        return origins[3];
-      case 10:
-        return origins[4];
-      case 11:
-      case 12:
-        return origins[5];
-    }
-  }
-
-
-
-  var randomNumPow = function() {
-    var r = roll() + roll();
-    switch (r) {
-      case 2:
-      case 3:
-      case 4:
-        return 2;
-      case 5:
-      case 6:
-      case 7:
-        return 3;
-      case 8:
-      case 9:
-      case 10:
-        return 4;
-      case 11:
-      case 12:
-        return 5;
-    }
-  };
-
-
-  var randomPower = function() {
-    var t = roll() + roll();
-    switch (t) {
-      case 2:
-      case 3:
-        return mental(roll(), roll());
-      case 4:
-      case 5:
-        return control(roll(), roll());
-      case 6:
-        return defensive(roll(), roll());
-      case 7:
-        return offensive(roll(), roll());
-      case 8:
-        return movement(roll(), roll());
-      case 9:
-      case 10:
-        return alteration(roll(), roll());
-      case 11:
-      case 12:
-        return sensory(roll(), roll());
-    };
-    return "NO POWER";
-  };
-
-  var numSpec = function(r) {
-    switch (r) {
-      case 2:
-      case 3:
-      case 4:
-        return 1;
-      case 5:
-      case 6:
-      case 7:
-        return 2;
-      case 8:
-      case 9:
-      case 10:
-        return 3;
-      case 11:
-      case 12:
-        return 4;
-    };
-  }
-
-  var randomNumSpec = function() {
-    var l = numSpec(roll() + roll());
-    return l;
-  };
-
-
-  var randomSpec = function() {
-    var l = ((roll() - 1) * 6) + (roll() - 1);
-    return specialties[l];
-  }
-
-
-  var calcDudeValue = function(dude) {
-    dude.attributeValue = dude.prowess + dude.coordination + dude.strength + dude.intellect + dude.awareness + dude.willpower;
-    dude.powerValue = 0;
-    for (var x = 0; x < dude.powers.length; x++) {
-      dude.powerValue += dude.powers[x].level;
-    };
-    dude.specValue = dude.specs.length
-    dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
-  }
-
-  var buildNullDude = function(seed) {
-	    var dude = {};
-	    totalValue = 0;
-
-	    dude.id = seed;
-	    dude.name = "Unnamed - " + seed;
-	    dude.origin = "";
-	    dude.prowess = 0;
-	    dude.coordination = 0;
-	    dude.strength = 0;
-	    dude.intellect = 0;
-	    dude.awareness = 0;
-	    dude.willpower = 0;
-	    dude.powers = [];
-
-	    for (var x = 0; x < 5; x++) {
-	        var p = {};
-	        p.power = "";
-	        p.level = 0;
-	        dude.powers.push(p);
-	      };
-	    dude.specs = [];
-	    var ns = 0;
-	    for (var x = 0; x < ns; x++) {
-	      dude.specs.push(randomSpec());
-	    };
-
-	    calcDudeValue(dude);
-
-    seed = Date.now();
-	    return dude;
-	  };
-
-  
-  
-  var buildDude = function(s) {
-    var dude = {};
-    totalValue = 0;
-
-    dude.id = s;
-    dude.name = "Unnamed - " + seed;
-    dude.origin = randomOrigin();
-    dude.prowess = randomLevel();
-    dude.coordination = randomLevel();
-    dude.strength = randomLevel();
-    dude.intellect = randomLevel();
-    dude.awareness = randomLevel();
-    dude.willpower = randomLevel();
-    dude.powers = [];
-
-    var np = randomNumPow();
-    for (var x = 0; x < np; x++) {
-        var p = {};
-        p.power = randomPower();
-        p.level = randomLevel();
-        dude.powers.push(p);
-      };
-      for (var x = np; x < 5; x++) {
-          var p = {};
-          p.power = "";
-          p.level = 0;
-          dude.powers.push(p);
-      }
-    dude.specs = [];
-    var ns = randomNumSpec();
-    for (var x = 0; x < ns; x++) {
-      dude.specs.push(randomSpec());
-    };
-
-    calcDudeValue(dude);
-
-    seed = Date.now();
-    return dude;
-  };
-
-  var displayDude = function(dude) {
-
-    $("#attributeValue").text( dude.attributeValue );
-    $("#origin").text( dude.origin );
-
-    $("#prowess>select").val(dude.prowess);
-    $("#coordination>select").val(dude.coordination) ;
-    $("#strength>select").val(dude.strength);
-    $("#intellect>select").val(dude.intellect) ;
-    $("#awareness>select").val(dude.awareness) ;
-    $("#willpower>select").val(dude.willpower) ;
-
-    $("#powerValue").text( dude.powerValue );
-    var np = dude.powers.length;
-    for (var x = 0; x < np; x++) {
-      $("#power" + x + ">select").val( dude.powers[x].power );
-      $("#powerLevel" + x+ ">select").val( dude.powers[x].level );
-    };
-    for (var x = np; x < 5; x++) {
-      $("#power" + x+ ">select").val( "" );
-      $("#powerLevel" + x+ ">select").val( 0 );
-    };
-
-    $("#specValue").text( dude.specValue );
-    $("#specialties").text( dude.specs.join(', ') );
-    $("#charId").val( dude.name );
-    $("#level").text(dude.value);
-  }
-
-  var generate = function() {
-
-    var pointLimit = 0;
-
-    var dude = buildDude(seed);
-
-    while (pointLimit != 0 && dude.value != pointLimit) {
-      dude = buildDude(seed);
-    }
-    displayDude(dude);
-    currentDude=dude;
-    
-    seed = Date.now();
-  }
-
-  var createNew = function() {
-    var dude = buildNullDude(seed);
-    displayDude(dude);
-    currentDude=dude;
-    seed = Date.now();
-  }
-
-
-  var appendLog = function(d) {
-    var s = d.name;
-    var col = $('#history');
-    var entry = $("<option id='" + d.id + "'>" + d.name + "</option>");
-    col.append(entry);
-
-    entry.click(function() {
-      currentDude = d;		    
-      displayDude(d);
-    });
-
-    entry.hover(
-    function() {
-     entry.addClass("hover")
-    },
-    function() {
-     entry.removeClass("hover")
-    });
-  }
-
-
-  var debug = function(l) {
-    var log = $('#log').append("<div>"+ l +"</div");
-  }
-  
-  var saveDude = function(dude) {
-    var foundIt = false;
-    $.each(dudes, function (index, value) {
-	if (dude.id === value.id) {
-	  foundIt = true;
-	  return false;
-        };
-    });
-    if (foundIt === false) {
-      dudes.push(dude);
-    }
-    dudes.sort();
-    $("#history").empty();
-    $.each(dudes, function (index, value) {
-	    appendLog(value);
-    });
-  }
-
-
+	Array.prototype.unique = function() {
+		var a = this.concat();
+		for (var i = 0; i < a.length; ++i) {
+			for (var j = i + 1; j < a.length; ++j) {
+				if (a[i] === a[j])
+					a.splice(j--, 1);
+			}
+		}
+		return a;
+	};
+
+	var printDiv = function(divName) {
+		var printContents = document.getElementById(divName).innerHTML;
+		var originalContents = document.body.innerHTML;
+		document.body.innerHTML = printContents;
+		window.print();
+		document.body.innerHTML = originalContents;
+	}
+
+	var dudes = [];
+	var currentDude = {};
+
+	var seed = 1;
+
+	function randomDave() {
+		var x = Math.sin(seed++) * 10000;
+		return x - Math.floor(x);
+	}
+
+	var roll = function() {
+		return Math.floor((randomDave() * 100000) % 6 + 1);
+	};
+
+	var levels = [ "", "Weak", "Poor", "Average", "Fair", "Good", "Great",
+			"Incredible", "Amazing", "Fantastic", "Supreme" ];
+
+	var origins = [ "Trained", "Transformed", "Birthright", "Gimmick",
+			"Artificial", "Unearthly" ];
+
+	var alterationPowers = [ "Ability Boost", "Ability Increase", "Alter Ego",
+			"Alternate Form", "Aquatic", "Density", "Duplication",
+			"Extra Body Parts", "Growth", "Invisibility", "Phasing",
+			"Shrinking", "Animal Mimicry", "Material Mimicry", "Plant Mimicry",
+			"Power Mimicry", "Stretching", "Transformation" ];
+
+	var controlPowers = [ "Alteration Ray", "Alteration Ray",
+			"Element Control", "Element Control", "Probability Control",
+			"Time Control", "Energy Control", "Energy Control", "Healing",
+			"Telekinesis", "Telekinesis", "Transmutation", "Cosmic Power",
+			"Gadgets", "Gadgets", "Magic", "Nullification", "Servant" ];
+
+	var defensivePowers = [ "Absorption", "Absorption", "Adaptation",
+			"Force Field", "Force Field", "Force Field", "Immortality",
+			"Life Support", "Life Support", "Life Support", "Reflection",
+			"Reflection", "Regeneration", "Regeneration", "Resistance",
+			"Resistance", "Resistance", "Resistance" ];
+
+	var mentalPowers = [ "Astral Projection", "Dream Control",
+			"Emotion Control", "Emotion Control", "Illusion", "Images",
+			"Mental Blast", "Mental Blast", "Mind Control", "Mind Shield",
+			"Telepathy", "Telepathy" ];
+
+	var movementPowers = [ "Burrowing", "Dimensional Travel", "Flight",
+			"Flight", "Leaping", "Leaping", "Spinning", "Super-Speed",
+			"Super-Speed", "Swinging", "Teleportation", "Wall-Crawling" ];
+
+	var offensivePowers = [ "Affliction", "Binding", "Blast", "Blast",
+			"Strike", "Strike", "Aura", "Dazzle", "Dazzle", "Energy Drain",
+			"Fast Attack", "Stunning" ];
+
+	var sensoryPowers = [ "Detection", "Detection", "ESP", "Super-Senses",
+			"Super-Senses", "Super-Senses", "Danger Sense", "Danger Sense",
+			"Interface", "Postcognition", "Precognition", "Precognition" ];
+
+	var allPowers = alterationPowers.concat(controlPowers.unique()).concat(
+			defensivePowers.unique()).concat(mentalPowers.unique()).concat(
+			movementPowers.unique()).concat(offensivePowers.unique()).concat(
+			sensoryPowers.unique());
+	allPowers = [ " " ].concat(allPowers.sort());
+
+	var specialties = [ "Aerial Combat", "Art", "Athletics", "Athletics",
+			"Business", "Drive", "Investigation", "Investigation", "Law",
+			"Leadership", "Leadership", "Linguistics", "Martial Arts",
+			"Martial Arts", "Medicine", "Mental Resistance",
+			"Mental Resistance", "Military", "Occult", "Performance", "Pilot",
+			"Power", "Power", "Power", "Psychiatry", "Science", "Science",
+			"Sleight of Hand", "Stealth", "Stealth", "Technology",
+			"Technology", "Underwater Combat", "Weapons", "Wrestling",
+			"Wrestling" ];
+
+	var allSpecialties = specialties.unique().sort();
+
+	var alteration = function(r1, r2) {
+		switch (r1) {
+		case 1:
+		case 2:
+			return alterationPowers[r2 - 1];
+		case 3:
+		case 4:
+			return alterationPowers[6 + r2 - 1];
+		case 5:
+		case 6:
+			return alterationPowers[12 + r2 - 1];
+		}
+		return "NO POWER";
+	};
+
+	var control = function(r1, r2) {
+		switch (r1) {
+		case 1:
+		case 2:
+			return controlPowers[r2 - 1];
+		case 3:
+		case 4:
+			return controlPowers[6 + r2 - 1];
+		case 5:
+		case 6:
+			return controlPowers[12 + r2 - 1];
+		}
+		return "NO POWER";
+	};
+
+	var defensive = function(r1, r2) {
+		switch (r1) {
+		case 1:
+		case 2:
+			return defensivePowers[r2 - 1];
+		case 3:
+		case 4:
+			return defensivePowers[6 + r2 - 1];
+		case 5:
+		case 6:
+			return defensivePowers[12 + r2 - 1];
+		}
+		return "NO POWER";
+	};
+
+	var mental = function(r1, r2) {
+		switch (r1) {
+		case 1:
+		case 2:
+		case 3:
+			return mentalPowers[r2 - 1];
+		case 4:
+		case 5:
+		case 6:
+			return mentalPowers[6 + r2 - 1];
+		}
+		return "NO POWER";
+	};
+
+	var movement = function(r1, r2) {
+		switch (r1) {
+		case 1:
+		case 2:
+		case 3:
+			return movementPowers[r2 - 1];
+		case 4:
+		case 5:
+		case 6:
+			return movementPowers[6 + r2 - 1];
+		}
+		return "NO POWER";
+	};
+
+	var offensive = function(r1, r2) {
+		switch (r1) {
+		case 1:
+		case 2:
+		case 3:
+			return offensivePowers[r2 - 1];
+		case 4:
+		case 5:
+		case 6:
+			return offensivePowers[6 + r2 - 1];
+		}
+		return "NO POWER";
+	}
+
+	var sensory = function(r1, r2) {
+		switch (r1) {
+		case 1:
+		case 2:
+		case 3:
+			return sensoryPowers[r2 - 1];
+		case 4:
+		case 5:
+		case 6:
+			return sensoryPowers[6 + r2 - 1];
+		}
+		return "NO POWER";
+	}
+
+	var levelScore = function(r) {
+		switch (r) {
+		case 2:
+			return 1;
+		case 3:
+			return 2;
+		case 4:
+			return 3;
+		case 5:
+		case 6:
+			return 4;
+		case 7:
+		case 8:
+			return 5;
+		case 9:
+		case 10:
+			return 6;
+		case 11:
+			return 7;
+		case 12:
+			return 8;
+		}
+		;
+	};
+
+	function randomLevel() {
+		var l = levelScore(roll() + roll());
+		return l;
+	};
+
+	var levelDescription = function(l) {
+		if (l === 0) {
+			return "";
+		} else {
+			return "" + levels[l] + " (" + l + ")";
+		}
+	}
+
+	var randomOrigin = function() {
+		switch (roll() + roll()) {
+		case 2:
+		case 3:
+		case 4:
+			return origins[0];
+		case 5:
+		case 6:
+			return origins[1];
+		case 7:
+			return origins[2];
+		case 8:
+		case 9:
+			return origins[3];
+		case 10:
+			return origins[4];
+		case 11:
+		case 12:
+			return origins[5];
+		}
+	}
+
+	var randomNumPow = function() {
+		var r = roll() + roll();
+		switch (r) {
+		case 2:
+		case 3:
+		case 4:
+			return 2;
+		case 5:
+		case 6:
+		case 7:
+			return 3;
+		case 8:
+		case 9:
+		case 10:
+			return 4;
+		case 11:
+		case 12:
+			return 5;
+		}
+	};
+
+	var randomPower = function() {
+		var t = roll() + roll();
+		switch (t) {
+		case 2:
+		case 3:
+			return mental(roll(), roll());
+		case 4:
+		case 5:
+			return control(roll(), roll());
+		case 6:
+			return defensive(roll(), roll());
+		case 7:
+			return offensive(roll(), roll());
+		case 8:
+			return movement(roll(), roll());
+		case 9:
+		case 10:
+			return alteration(roll(), roll());
+		case 11:
+		case 12:
+			return sensory(roll(), roll());
+		}
+		;
+		return "NO POWER";
+	};
+
+	var numSpec = function(r) {
+		switch (r) {
+		case 2:
+		case 3:
+		case 4:
+			return 1;
+		case 5:
+		case 6:
+		case 7:
+			return 2;
+		case 8:
+		case 9:
+		case 10:
+			return 3;
+		case 11:
+		case 12:
+			return 4;
+		}
+		;
+	}
+
+	var randomNumSpec = function() {
+		var l = numSpec(roll() + roll());
+		return l;
+	};
+
+	var randomSpec = function() {
+		var l = ((roll() - 1) * 6) + (roll() - 1);
+		return specialties[l];
+	}
+
+	var calcDudeValue = function(dude) {
+		dude.attributeValue = dude.prowess + dude.coordination + dude.strength
+				+ dude.intellect + dude.awareness + dude.willpower;
+		dude.powerValue = 0;
+		for (var x = 0; x < dude.powers.length; x++) {
+			dude.powerValue += dude.powers[x].level;
+		}
+		;
+		dude.specValue = dude.specs.length
+		dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
+	}
+
+	var buildNullDude = function(seed) {
+		var dude = {};
+
+		dude.id = seed;
+		dude.name = "Unnamed - " + seed;
+		dude.origin = "";
+		dude.prowess = 0;
+		dude.coordination = 0;
+		dude.strength = 0;
+		dude.intellect = 0;
+		dude.awareness = 0;
+		dude.willpower = 0;
+		dude.powers = [];
+
+		for (var x = 0; x < 5; x++) {
+			var p = {};
+			p.power = "";
+			p.level = 0;
+			dude.powers.push(p);
+		}
+		;
+		dude.specs = [];
+		var ns = 0;
+		for (var x = 0; x < ns; x++) {
+			dude.specs.push(randomSpec());
+		}
+		;
+
+		calcDudeValue(dude);
+
+		seed = Date.now();
+		return dude;
+	};
+
+	var buildDude = function(s) {
+		var dude = {};
+
+		dude.id = s;
+		dude.name = "Unnamed - " + seed;
+		dude.origin = randomOrigin();
+		dude.prowess = randomLevel();
+		dude.coordination = randomLevel();
+		dude.strength = randomLevel();
+		dude.intellect = randomLevel();
+		dude.awareness = randomLevel();
+		dude.willpower = randomLevel();
+		dude.powers = [];
+
+		var np = randomNumPow();
+		for (var x = 0; x < np; x++) {
+			var p = {};
+			p.power = randomPower();
+			p.level = randomLevel();
+			dude.powers.push(p);
+		}
+		;
+		for (var x = np; x < 5; x++) {
+			var p = {};
+			p.power = "";
+			p.level = 0;
+			dude.powers.push(p);
+		}
+		dude.specs = [];
+		var ns = randomNumSpec();
+		for (var x = 0; x < ns; x++) {
+			dude.specs.push(randomSpec());
+		}
+		;
+
+		calcDudeValue(dude);
+
+		seed = Date.now();
+		return dude;
+	};
+
+	var displayDude = function(dude) {
+
+		$("#attributeValue").text(dude.attributeValue);
+		$("#origin").text(dude.origin);
+
+		$("#prowess>select").val(dude.prowess);
+		$("#coordination>select").val(dude.coordination);
+		$("#strength>select").val(dude.strength);
+		$("#intellect>select").val(dude.intellect);
+		$("#awareness>select").val(dude.awareness);
+		$("#willpower>select").val(dude.willpower);
+
+		$("#powerValue").text(dude.powerValue);
+		var np = dude.powers.length;
+		for (var x = 0; x < np; x++) {
+			$("#power" + x + ">select").val(dude.powers[x].power);
+			$("#powerLevel" + x + ">select").val(dude.powers[x].level);
+		}
+		;
+		for (var x = np; x < 5; x++) {
+			$("#power" + x + ">select").val("");
+			$("#powerLevel" + x + ">select").val(0);
+		}
+		;
+
+		$("#specValue").text(dude.specValue);
+		$("#specialties").text(dude.specs.join(', '));
+		$("#charId").val(dude.name);
+		$("#level").text(dude.value);
+	}
+
+	var generate = function() {
+
+		var pointLimit = 0;
+
+		var dude = buildDude(seed);
+
+		while (pointLimit != 0 && dude.value != pointLimit) {
+			dude = buildDude(seed);
+		}
+		displayDude(dude);
+		currentDude = dude;
+
+		seed = Date.now();
+	}
+
+	var createNew = function() {
+		var dude = buildNullDude(seed);
+		displayDude(dude);
+		currentDude = dude;
+		seed = Date.now();
+	}
+
+	var appendLog = function(d) {
+		var s = d.name;
+		var col = $('#history');
+		var entry = $("<option id='" + d.id + "'>" + d.name + "</option>");
+		col.append(entry);
+
+		entry.click(function() {
+			currentDude = d;
+			displayDude(d);
+		});
+
+		entry.hover(function() {
+			entry.addClass("hover")
+		}, function() {
+			entry.removeClass("hover")
+		});
+	}
+
+	var debug = function(l) {
+		var log = $('#log').append("<div>" + l + "</div");
+	}
+
+	var saveDude = function(dude) {
+		var foundIt = false;
+		$.each(dudes, function(index, value) {
+			if (dude.id === value.id) {
+				foundIt = true;
+				return false;
+			}
+			;
+		});
+		if (foundIt === false) {
+			dudes.push(dude);
+		}
+		dudes.sort();
+		$("#history").empty();
+		$.each(dudes, function(index, value) {
+			appendLog(value);
+		});
+	}
 </script>
 <h3>Either...</h3>
 <br>
-<P>Generate a Hero based on point level
-<select id="limit">
-	<option value="0">Unlimited</option>
-	<option value="30">30</option>
-	<option value="35">35</option>
-	<option value="40">40</option>
-	<option value="45">45</option>
-	<option value="50">50</option>
-	<option value="55">55</option>
-	<option value="60">60</option>
-</select>
-<button onclick="generate()">Generate!</button>
-<P>Create a new Hero <button onclick="createNew();">Create New</button>
-<P>Save a hero to the sidebar<button onclick="saveDude(currentDude);">Save</button>
-
+<P>
+	Generate a Hero based on point level <select id="limit">
+		<option value="0">Unlimited</option>
+		<option value="30">30</option>
+		<option value="35">35</option>
+		<option value="40">40</option>
+		<option value="45">45</option>
+		<option value="50">50</option>
+		<option value="55">55</option>
+		<option value="60">60</option>
+	</select>
+	<button onclick="generate()">Generate!</button>
+<P>
+	Create a new Hero
+	<button onclick="createNew();">Create New</button>
+<P>
+	Save a hero to the sidebar
+	<button onclick="saveDude(currentDude);">Save</button>
+<P>
+	Print a Hero
+	<button onclick="printDiv('printableArea')" value="print a div!">Print!</button>
 <hr>
 <table style="height: 600px;">
 	<tr>
@@ -563,154 +553,158 @@ option.hover {
 		<td width=150 valign=top><select
 			style="width: 20em; height: 100%;" id='history' multiple></select></td>
 		<td valign=top>
-			<table width=320>
-				<tr>
-					<th width=150>Identification</th>
-					<th width=100>&nbsp;</th>
-				</tr>
-				<tr>
-					<td>ID</td>
-					<td ><input id="charId" type="text" style="width:15em;"></input</td>
-				</tr>
-				<tr>
-					<td>Level</td>
-					<td id="level"></td>
-				</tr>
-				<tr>
-					<td colspan=2>&nbsp;</td>
-				</tr>
-				<tr>
-					<th colspan=2>Origin</th>
-				</tr>
-				<tr>
-					<td colspan=2 id="origin"></td>
-				</tr>
-				<tr>
-					<td colspan=2>&nbsp;</td>
-				</tr>
-				<tr>
-					<th colspan=2>Attributes (<span id='attributeValue'></span>)
-					</th>
-				</tr>
-				<tr>
-					<td>Prowess</td>
-					<td id="prowess" class="power"></td>
-				</tr>
-				<tr>
-					<td>Coordination</td>
-					<td id="coordination" class="power"></td>
-				</tr>
-				<tr>
-					<td>Strength</td>
-					<td id="strength" class="power"></td>
-				</tr>
-				<tr>
-					<td>Intellect</td>
-					<td id="intellect" class="power"></td>
-				</tr>
-				<tr>
-					<td>Awareness</td>
-					<td id="awareness" class="power"></td>
-				</tr>
-				<tr>
-					<td>Willpower</td>
-					<td id="willpower" class="power"></td>
-				</tr>
-				<tr>
-					<td colspan=2>&nbsp;</td>
-				</tr>
-				<tr>
-					<th colspan=2>Powers (<span id='powerValue'></span>)
-					</th>
-				</tr>
-				<tr>
-					<td id="power0" class="powerSelector"></td>
-					<td id="powerLevel0" class="power"></td>
-				</tr>
-				<tr>
-					<td id="power1" class="powerSelector"></td>
-					<td id="powerLevel1" class="power"></td>
-				</tr>
-				<tr>
-					<td id="power2" class="powerSelector"></td>
-					<td id="powerLevel2" class="power"></td>
-				</tr>
-				<tr>
-					<td id="power3" class="powerSelector"></td>
-					<td id="powerLevel3" class="power"></td>
-				</tr>
-				<tr>
-					<td id="power4" class="powerSelector"></td>
-					<td id="powerLevel4" class="power"></td>
-				</tr>
-				<tr>
-					<td colspan=2>&nbsp;</td>
-				</tr>
-				<tr>
-					<th colspan=2>Specialties (<span id='specValue'></span>)
-					</th>
-					</th>
-				<tr>
-					<td colspan=2 id="specialties"></td>
-				</tr>
-			</table>
+			<div id="printableArea">
+				<table width=320>
+					<tr>
+						<th width=150>Identification</th>
+						<th width=100>&nbsp;</th>
+					</tr>
+					<tr>
+						<td>ID</td>
+						<td><input id="charId" type="text" style="width: 15em;"></input</td>
+					</tr>
+					<tr>
+						<td>Level</td>
+						<td id="level"></td>
+					</tr>
+					<tr>
+						<td colspan=2>&nbsp;</td>
+					</tr>
+					<tr>
+						<th colspan=2>Origin</th>
+					</tr>
+					<tr>
+						<td colspan=2 id="origin"></td>
+					</tr>
+					<tr>
+						<td colspan=2>&nbsp;</td>
+					</tr>
+					<tr>
+						<th colspan=2>Attributes (<span id='attributeValue'></span>)
+						</th>
+					</tr>
+					<tr>
+						<td>Prowess</td>
+						<td id="prowess" class="power"></td>
+					</tr>
+					<tr>
+						<td>Coordination</td>
+						<td id="coordination" class="power"></td>
+					</tr>
+					<tr>
+						<td>Strength</td>
+						<td id="strength" class="power"></td>
+					</tr>
+					<tr>
+						<td>Intellect</td>
+						<td id="intellect" class="power"></td>
+					</tr>
+					<tr>
+						<td>Awareness</td>
+						<td id="awareness" class="power"></td>
+					</tr>
+					<tr>
+						<td>Willpower</td>
+						<td id="willpower" class="power"></td>
+					</tr>
+					<tr>
+						<td colspan=2>&nbsp;</td>
+					</tr>
+					<tr>
+						<th colspan=2>Powers (<span id='powerValue'></span>)
+						</th>
+					</tr>
+					<tr>
+						<td id="power0" class="powerSelector"></td>
+						<td id="powerLevel0" class="power"></td>
+					</tr>
+					<tr>
+						<td id="power1" class="powerSelector"></td>
+						<td id="powerLevel1" class="power"></td>
+					</tr>
+					<tr>
+						<td id="power2" class="powerSelector"></td>
+						<td id="powerLevel2" class="power"></td>
+					</tr>
+					<tr>
+						<td id="power3" class="powerSelector"></td>
+						<td id="powerLevel3" class="power"></td>
+					</tr>
+					<tr>
+						<td id="power4" class="powerSelector"></td>
+						<td id="powerLevel4" class="power"></td>
+					</tr>
+					<tr>
+						<td colspan=2>&nbsp;</td>
+					</tr>
+					<tr>
+						<th colspan=2>Specialties (<span id='specValue'></span>)
+						</th>
+						</th>
+					<tr>
+						<td colspan=2 id="specialties"></td>
+					</tr>
+				</table>
+			</div>
 		</td>
 	</tr>
 </table>
 <div id='log'></div>
 
 <script>
-  seed = Date.now()
+	seed = Date.now()
 
-
-  $('.power').each(function (index, element){
-		  var ddd = $("<select>")
-		  jQuery.each(levels, function(index, value) {
-			  if (index ===0) {
-				    ddd.append("<option value="+ index + ">" +value+ "</option>");
-			  } else {
-				    ddd.append("<option value="+index+">" +value+ " ("+ (index) +")</option>");				  
-			  }
-		  });
-		  $(element).append(ddd);
-		  $(element).change(function(){
+	$('.power').each(
+			function(index, element) {
+				var ddd = $("<select>")
+				jQuery.each(levels, function(index, value) {
+					if (index === 0) {
+						ddd.append("<option value="+ index + ">" + value
+								+ "</option>");
+					} else {
+						ddd.append("<option value="+index+">" + value + " ("
+								+ (index) + ")</option>");
+					}
+				});
+				$(element).append(ddd);
+				$(element).change(function() {
+					var i = element.id;
+					var d = $(ddd).val();
+					if (i.indexOf("powerLevel") == -1) {
+						currentDude[i] = parseInt(d);
+						calcDudeValue(currentDude);
+						displayDude(currentDude);
+					} else {
+						var l = parseInt(i.replace("powerLevel", ""));
+						currentDude.powers[l].level = parseInt(d);
+						calcDudeValue(currentDude);
+						displayDude(currentDude);
+					}
+				});
+			});
+	$('.powerSelector').each(function(index, element) {
+		var ddd = $("<select>")
+		jQuery.each(allPowers, function(index, value) {
+			ddd.append("<option>" + value + "</option>");
+		});
+		$(element).append(ddd);
+		$(element).change(function() {
 			var i = element.id;
 			var d = $(ddd).val();
-			if (i.indexOf("powerLevel") == -1) {
-				currentDude[i] = parseInt(d);
-				calcDudeValue(currentDude);
-				displayDude(currentDude);				
-			} else {
-				var l = parseInt(i.replace("powerLevel", ""));
-				currentDude.powers[l].level = parseInt(d);
-				calcDudeValue(currentDude);
-				displayDude(currentDude);					
-			}
+			var l = parseInt(i.replace("power", ""));
+			currentDude.powers[l].power = d;
+			calcDudeValue(currentDude);
+			displayDude(currentDude);
 		});
-  });
-  $('.powerSelector').each(function (index, element){
-		  var ddd = $("<select>")
-		  jQuery.each(allPowers, function(index, value) {
-		    ddd.append("<option>" +value +"</option>");
-		  });
-		  $(element).append(ddd);
-		  $(element).change(function(){
-				var i = element.id;
-				var d = $(ddd).val();
-				var l = parseInt(i.replace("power", ""));
-				currentDude.powers[l].power = d;
-				calcDudeValue(currentDude);
-				displayDude(currentDude);		
-		  });
-		  
-  });
 
-  $("#charId").change(function(data){
-		  currentDude.name = $(this).val();
-  });
-  
-  currentDude = buildDude(seed);
-  displayDude(currentDude);
+	});
+
+	$("#charId").change(function(data) {
+		currentDude.name = $(this).val();
+	});
+
+	currentDude = buildDude(seed);
+	displayDude(currentDude);
 </script>
 
 
