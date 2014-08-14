@@ -363,7 +363,12 @@ option.hover {
 			dude.powerValue += dude.powers[x].level;
 		}
 		;
-		dude.specValue = dude.specs.length
+		dude.specValue = 0;
+		$.each(dude.specs, function(index, value) {
+		    if (! $.isEmptyObject(value)) {
+		        dude.specValue++;
+		    }
+		});
 		dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
 	}
 
@@ -793,6 +798,14 @@ option.hover {
 			ddd.append("<option>" + value + "</option>");
 		});
 		$(element).append(ddd);
+		$(element).change(function() {
+			var i = element.id;
+			var d = $(ddd).val();
+			var l = parseInt(i.replace("spec", ""));
+			currentDude.specs[l] = d;
+			calcDudeValue(currentDude);
+			displayDude(currentDude);
+		});
 	});
 
 	$("#charId").change(function(data) {
