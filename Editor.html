@@ -91,7 +91,20 @@ option.hover {
 			sensoryPowers.unique());
 	allPowers = [ " " ].concat(allPowers.sort());
 
-	var specialties = [ "Aerial Combat", "Art", "Athletics", "Athletics",
+	
+	
+
+  var standardExtras = ["Affects Others", "Affects X", "Broadcast", "Burst",
+    "Contagious", "Defensive", "Effect", "Level Duration", "Passengers", 
+    "Ranged","Rangeless", "Reversible", "Secondary Effect", "Slow Recovery" ];
+	
+  var standardLimitations = [ "Animals Only", "Blocked by X", "Burnout", 
+    "Close Range", "Concentration", "Constant", "Degrades", "Exclusive",
+    "Extra Only", "Line of Sight", "Max Only", "No Stunts", "Only X",
+    "Others Only", "Performance", "Preparation", "Source", "Temporary", 
+    "Tiring", "Uncontrolled", "Unpredictable", "Unstable" ];
+	
+	var specialties = [ "", "Aerial Combat", "Art", "Athletics", "Athletics",
 			"Business", "Drive", "Investigation", "Investigation", "Law",
 			"Leadership", "Leadership", "Linguistics", "Martial Arts",
 			"Martial Arts", "Medicine", "Mental Resistance",
@@ -339,7 +352,7 @@ option.hover {
 
 	var randomSpec = function() {
 		var l = ((roll() - 1) * 6) + (roll() - 1);
-		return specialties[l];
+		return specialties[l + 1];
 	}
 
 	var calcDudeValue = function(dude) {
@@ -451,6 +464,16 @@ option.hover {
 		for (var x = np; x < 5; x++) {
 			$("#power" + x + ">select").val("");
 			$("#powerLevel" + x + ">select").val(0);
+		}
+		;
+		
+		var ns = dude.specs.length;
+		for (var x = 0; x < ns; x++) {
+			$("#spec" + x + ">select").val(dude.specs[x]);
+		}
+		;
+		for (var x = ns; x < 4; x++) {
+			$("#spec" + x + ">select").val("");
 		}
 		;
 
@@ -698,9 +721,17 @@ option.hover {
 					<tr>
 						<th colspan=2>Specialties (<span id='specValue'></span>)
 						</th>
-						</th>
 					<tr>
-						<td colspan=2 id="specialties"></td>
+						<td id="spec0" class="specSelector"></td>
+					</tr>
+					<tr>
+						<td id="spec1" class="specSelector"></td>
+					</tr>
+					<tr>
+						<td id="spec2" class="specSelector"></td>
+					</tr>
+					<tr>
+						<td id="spec3" class="specSelector"></td>
 					</tr>
 				</table>
 			</div>
@@ -755,6 +786,13 @@ option.hover {
 			displayDude(currentDude);
 		});
 
+	});
+	$('.specSelector').each(function(index, element) {
+		var ddd = $("<select>")
+		jQuery.each(allSpecialties, function(index, value) {
+			ddd.append("<option>" + value + "</option>");
+		});
+		$(element).append(ddd);
 	});
 
 	$("#charId").change(function(data) {
