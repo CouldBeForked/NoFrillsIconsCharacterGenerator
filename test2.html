@@ -1,0 +1,253 @@
+<html>
+<body>
+	<script src="jquery.min.js"></script>
+	<script>
+		Array.prototype.unique = function() {
+			var a = this.concat();
+			for (var i = 0; i < a.length; ++i) {
+				for (var j = i + 1; j < a.length; ++j) {
+					if (a[i] === a[j])
+						a.splice(j--, 1);
+				}
+			}
+			return a;
+		};
+
+		var levels = [ "--Select a level--", "Weak", "Poor", "Average", "Fair",
+				"Good", "Great", "Incredible", "Amazing", "Fantastic",
+				"Supreme" ];
+
+		var origins = [ "Trained", "Transformed", "Birthright", "Gimmick",
+				"Artificial", "Unearthly" ];
+
+		var alterationPowers = [ "Ability Boost", "Ability Increase",
+				"Alter Ego", "Alternate Form", "Aquatic", "Density",
+				"Duplication", "Extra Body Parts", "Growth", "Invisibility",
+				"Phasing", "Shrinking", "Animal Mimicry", "Material Mimicry",
+				"Plant Mimicry", "Power Mimicry", "Stretching",
+				"Transformation" ];
+
+		var controlPowers = [ "Alteration Ray", "Alteration Ray",
+				"Element Control", "Element Control", "Probability Control",
+				"Time Control", "Energy Control", "Energy Control", "Healing",
+				"Telekinesis", "Telekinesis", "Transmutation", "Cosmic Power",
+				"Gadgets", "Gadgets", "Magic", "Nullification", "Servant" ];
+
+		var defensivePowers = [ "Absorption", "Absorption", "Adaptation",
+				"Force Field", "Force Field", "Force Field", "Immortality",
+				"Life Support", "Life Support", "Life Support", "Reflection",
+				"Reflection", "Regeneration", "Regeneration", "Resistance",
+				"Resistance", "Resistance", "Resistance" ];
+
+		var mentalPowers = [ "Astral Projection", "Dream Control",
+				"Emotion Control", "Emotion Control", "Illusion", "Images",
+				"Mental Blast", "Mental Blast", "Mind Control", "Mind Shield",
+				"Telepathy", "Telepathy" ];
+
+		var movementPowers = [ "Burrowing", "Dimensional Travel", "Flight",
+				"Flight", "Leaping", "Leaping", "Spinning", "Super-Speed",
+				"Super-Speed", "Swinging", "Teleportation", "Wall-Crawling" ];
+
+		var offensivePowers = [ "Affliction", "Binding", "Blast", "Blast",
+				"Strike", "Strike", "Aura", "Dazzle", "Dazzle", "Energy Drain",
+				"Fast Attack", "Stunning" ];
+
+		var sensoryPowers = [ "Detection", "Detection", "ESP", "Super-Senses",
+				"Super-Senses", "Super-Senses", "Danger Sense", "Danger Sense",
+				"Interface", "Postcognition", "Precognition", "Precognition" ];
+
+		var allPowers = alterationPowers.concat(controlPowers.unique()).concat(
+				defensivePowers.unique()).concat(mentalPowers.unique()).concat(
+				movementPowers.unique()).concat(offensivePowers.unique())
+				.concat(sensoryPowers.unique());
+
+		allPowers = [ "--Select a power--" ].concat(allPowers.sort());
+
+		var standardExtras = [ "Affects Others", "Affects X", "Broadcast",
+				"Burst", "Contagious", "Defensive", "Effect", "Level Duration",
+				"Passengers", "Ranged", "Rangeless", "Reversible",
+				"Secondary Effect", "Slow Recovery" ];
+
+		var standardLimitations = [ "Animals Only", "Blocked by X", "Burnout",
+				"Close Range", "Concentration", "Constant", "Degrades",
+				"Exclusive", "Extra Only", "Line of Sight", "Max Only",
+				"No Stunts", "Only X", "Others Only", "Performance",
+				"Preparation", "Source", "Temporary", "Tiring", "Uncontrolled",
+				"Unpredictable", "Unstable" ];
+
+		var specialties = [ "", "Aerial Combat", "Art", "Athletics",
+				"Athletics", "Business", "Drive", "Investigation",
+				"Investigation", "Law", "Leadership", "Leadership",
+				"Linguistics", "Martial Arts", "Martial Arts", "Medicine",
+				"Mental Resistance", "Mental Resistance", "Military", "Occult",
+				"Performance", "Pilot", "Power", "Power", "Power",
+				"Psychiatry", "Science", "Science", "Sleight of Hand",
+				"Stealth", "Stealth", "Technology", "Technology",
+				"Underwater Combat", "Weapons", "Wrestling", "Wrestling" ];
+
+		var debug = function(l) {
+			var log = $('#log').append("<div>" + l + "</div");
+		}
+	</script>
+	<button id="addPower">+Power</button>
+	<table id='powerTable' width=640>
+	</table>
+
+
+	<script>
+		var currentDude = {};
+		currentDude.powers = [];
+
+		var addPower = function(pow) {
+			var power = {};
+			if ($.isEmptyObject(pow)) {
+				power.power = "";
+				power.level = 0;
+			} else {
+				power = pow;
+			}
+
+			// add the power to the dude
+			currentDude.powers.push(power)
+			var index = currentDude.powers.length - 1;
+
+			// add the row to the table
+			var rowTemplate = '<table><tr><td class="powerSelector" colspan=2></td><td class="powerLevel"></td><td><td><button class="powerDelete" onclick="">-</button><button class="addExtra">E+</button><button class="addLimitation")>L+</button></td></tr></table>';
+			var row = rowTemplate;
+
+			//append the list of powers
+			var ddd = $("<select>")
+			jQuery.each(allPowers, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			row = $(row).find('.powerSelector').append(ddd).end()
+
+			// append the list of power levels			
+			var ddd = $("<select>")
+			jQuery.each(levels, function(index, value) {
+				if (index === 0) {
+					ddd.append("<option value="+ index + ">" + value
+							+ "</option>");
+				} else {
+					ddd.append("<option value="+index+">" + value + " ("
+							+ (index) + ")</option>");
+				}
+			});
+			row = $(row).find('.powerLevel').append(ddd).end();
+			
+			// set up events 
+			
+			// power changed
+			$(row).find('.powerSelector>select').change(function(e){
+				debug('power changed ' + power.power);
+				power.power = $(this).val();
+				debug(' ---> ' + power.power);
+			});
+			
+			// power level changed
+			$(row).find('.powerLevel>select').change(function(e){
+				debug('powerLevel changed: ' + power.level );	
+				power.level = $(this).val();
+				debug(' ---> ' + power.level );	
+			});
+			
+			// power deleted
+			$(row).find('.powerDelete').click( function(){
+				debug('delete');
+				debug("predelete:" + currentDude.powers.length)
+				currentDude.powers = $.grep(currentDude.powers, function(v){
+					return v != power;
+				});
+				$(row).remove();
+				debug("postdelete:" + currentDude.powers.length)
+			});
+			
+			// added extra
+			$(row).find('.addExtra').click( function(){
+				debug('Add an extra');
+				// add a row to the table 
+				
+				// handle change event
+				
+				// handle delete event
+			});
+			
+			// added limitation
+			$(row).find('.addLimitation').click( function(){
+				debug('Add a limitation');
+				// add a row to the table 
+				
+				// handle change event
+				
+				// handle delete event
+			});
+			
+			
+			// add the completed row
+			row.appendTo('#powerTable');
+
+			
+			
+			
+			
+			
+			// initialize the power value (if it is provided)
+			$(row).find('td.powerSelector>select').val(pow.power);
+			$(row).find('td.powerLevel>select').val(pow.level);
+			
+			
+		}
+
+		$('#addPower').click(function() {
+			debug('addpower');
+			
+// 			var ppp = {};
+// 			ppp.power = 'Affliction';
+// 			ppp.level = 4;
+// 			addPower(ppp);
+
+			var qqq = {};
+			qqq.power = 'Blast';
+			qqq.level = 5;
+			qqq.extras = [];
+			qqq.limitations = [];
+			addPower(qqq);
+		});
+
+		$('.limitationSelector').each(function(index, element) {
+			var ddd = $("<select>")
+			jQuery.each(standardLimitations, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			$(element).append(ddd);
+		});
+		$('.extraSelector').each(function(index, element) {
+			var ddd = $("<select>")
+			jQuery.each(standardExtras, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			$(element).append(ddd);
+		});
+
+		var addLimitation = function(powNum, lim) {
+			var template = "<tr><td><button id='delete0'>-</button></td></tr>";
+			var row = $(template);
+
+			var ddd = $("<select>")
+			$.each(standardLimitations, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			var ccc = $("<td>")
+
+			$(row).append($("<td class='limitationSelector'>").append(ddd));
+
+			$("#power0mods").append(row);
+			$("#delete0").click(function(e) {
+				$(this).parent().parent().remove()
+			});
+		}
+	</script>
+	<hr>
+	<div id='log'></div>
+</body>
+</html>

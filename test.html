@@ -1,0 +1,189 @@
+<html>
+<body>
+	<script src="jquery.min.js"></script>
+	<script>
+		Array.prototype.unique = function() {
+			var a = this.concat();
+			for (var i = 0; i < a.length; ++i) {
+				for (var j = i + 1; j < a.length; ++j) {
+					if (a[i] === a[j])
+						a.splice(j--, 1);
+				}
+			}
+			return a;
+		};
+
+		var levels = [ "", "Weak", "Poor", "Average", "Fair", "Good", "Great",
+				"Incredible", "Amazing", "Fantastic", "Supreme" ];
+
+		var origins = [ "Trained", "Transformed", "Birthright", "Gimmick",
+				"Artificial", "Unearthly" ];
+
+		var alterationPowers = [ "Ability Boost", "Ability Increase",
+				"Alter Ego", "Alternate Form", "Aquatic", "Density",
+				"Duplication", "Extra Body Parts", "Growth", "Invisibility",
+				"Phasing", "Shrinking", "Animal Mimicry", "Material Mimicry",
+				"Plant Mimicry", "Power Mimicry", "Stretching",
+				"Transformation" ];
+
+		var controlPowers = [ "Alteration Ray", "Alteration Ray",
+				"Element Control", "Element Control", "Probability Control",
+				"Time Control", "Energy Control", "Energy Control", "Healing",
+				"Telekinesis", "Telekinesis", "Transmutation", "Cosmic Power",
+				"Gadgets", "Gadgets", "Magic", "Nullification", "Servant" ];
+
+		var defensivePowers = [ "Absorption", "Absorption", "Adaptation",
+				"Force Field", "Force Field", "Force Field", "Immortality",
+				"Life Support", "Life Support", "Life Support", "Reflection",
+				"Reflection", "Regeneration", "Regeneration", "Resistance",
+				"Resistance", "Resistance", "Resistance" ];
+
+		var mentalPowers = [ "Astral Projection", "Dream Control",
+				"Emotion Control", "Emotion Control", "Illusion", "Images",
+				"Mental Blast", "Mental Blast", "Mind Control", "Mind Shield",
+				"Telepathy", "Telepathy" ];
+
+		var movementPowers = [ "Burrowing", "Dimensional Travel", "Flight",
+				"Flight", "Leaping", "Leaping", "Spinning", "Super-Speed",
+				"Super-Speed", "Swinging", "Teleportation", "Wall-Crawling" ];
+
+		var offensivePowers = [ "Affliction", "Binding", "Blast", "Blast",
+				"Strike", "Strike", "Aura", "Dazzle", "Dazzle", "Energy Drain",
+				"Fast Attack", "Stunning" ];
+
+		var sensoryPowers = [ "Detection", "Detection", "ESP", "Super-Senses",
+				"Super-Senses", "Super-Senses", "Danger Sense", "Danger Sense",
+				"Interface", "Postcognition", "Precognition", "Precognition" ];
+
+		var allPowers = alterationPowers.concat(controlPowers.unique()).concat(
+				defensivePowers.unique()).concat(mentalPowers.unique()).concat(
+				movementPowers.unique()).concat(offensivePowers.unique())
+				.concat(sensoryPowers.unique());
+
+		allPowers = [ " " ].concat(allPowers.sort());
+
+		var standardExtras = [ "Affects Others", "Affects X", "Broadcast",
+				"Burst", "Contagious", "Defensive", "Effect", "Level Duration",
+				"Passengers", "Ranged", "Rangeless", "Reversible",
+				"Secondary Effect", "Slow Recovery" ];
+
+		var standardLimitations = [ "Animals Only", "Blocked by X", "Burnout",
+				"Close Range", "Concentration", "Constant", "Degrades",
+				"Exclusive", "Extra Only", "Line of Sight", "Max Only",
+				"No Stunts", "Only X", "Others Only", "Performance",
+				"Preparation", "Source", "Temporary", "Tiring", "Uncontrolled",
+				"Unpredictable", "Unstable" ];
+
+		var specialties = [ "", "Aerial Combat", "Art", "Athletics",
+				"Athletics", "Business", "Drive", "Investigation",
+				"Investigation", "Law", "Leadership", "Leadership",
+				"Linguistics", "Martial Arts", "Martial Arts", "Medicine",
+				"Mental Resistance", "Mental Resistance", "Military", "Occult",
+				"Performance", "Pilot", "Power", "Power", "Power",
+				"Psychiatry", "Science", "Science", "Sleight of Hand",
+				"Stealth", "Stealth", "Technology", "Technology",
+				"Underwater Combat", "Weapons", "Wrestling", "Wrestling" ];
+	</script>
+	<table width=640>
+		<tr>
+			<td id="power0" class="powerSelector" colspan=2></td>
+			<td id="powerLevel0" class="power"></td>
+			<td style="width: 500;"><button onclick="">E+</button>
+				<button id-"power0AddLim"onclick="addLimitation();">L+</button></td>
+		</tr>
+		<!-- extra -->
+		<table id="power0mods">
+			<tr>
+				<td><button onclick="">-</button></td>
+				<td class="extraSelector"></td>
+			</tr>
+
+			<!-- limitation -->
+			<tr>
+				<td><button onclick="">-</button></td>
+				<td class="limitationSelector"></td>
+			</tr>
+		</table>
+	</table>
+
+
+	<script>
+		$('.power').each(
+				function(index, element) {
+					var ddd = $("<select>")
+					jQuery.each(levels, function(index, value) {
+						if (index === 0) {
+							ddd.append("<option value="+ index + ">" + value
+									+ "</option>");
+						} else {
+							ddd.append("<option value="+index+">" + value
+									+ " (" + (index) + ")</option>");
+						}
+					});
+					$(element).append(ddd);
+				});
+		$('.powerSelector').each(function(index, element) {
+			var ddd = $("<select>")
+			jQuery.each(allPowers, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			$(element).append(ddd);
+			$(element).change(function() {
+				var i = element.id;
+				var d = $(ddd).val();
+				var l = parseInt(i.replace("power", ""));
+				currentDude.powers[l].power = d;
+				calcDudeValue(currentDude);
+				displayDude(currentDude);
+			});
+
+		});
+
+		var standardExtras = [ "Affects Others", "Affects X", "Broadcast",
+				"Burst", "Contagious", "Defensive", "Effect", "Level Duration",
+				"Passengers", "Ranged", "Rangeless", "Reversible",
+				"Secondary Effect", "Slow Recovery" ];
+
+		var standardLimitations = [ "Animals Only", "Blocked by X", "Burnout",
+				"Close Range", "Concentration", "Constant", "Degrades",
+				"Exclusive", "Extra Only", "Line of Sight", "Max Only",
+				"No Stunts", "Only X", "Others Only", "Performance",
+				"Preparation", "Source", "Temporary", "Tiring", "Uncontrolled",
+				"Unpredictable", "Unstable" ];
+
+		$('.limitationSelector').each(function(index, element) {
+			var ddd = $("<select>")
+			jQuery.each(standardLimitations, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			$(element).append(ddd);
+		});
+		$('.extraSelector').each(function(index, element) {
+			var ddd = $("<select>")
+			jQuery.each(standardExtras, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			$(element).append(ddd);
+		});
+		
+		
+		var addLimitation = function (powNum, lim) {
+			var template = "<tr><td><button id='delete0'>-</button></td></tr>";
+			var row = $(template);
+
+			var ddd = $("<select>")
+			$.each(standardLimitations, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			var ccc = $("<td>")
+			
+			$(row).append($("<td class='limitationSelector'>").append(ddd));
+
+			$("#power0mods").append(row);
+			$("#delete0").click(function(e){
+				$(this).parent().parent().remove()
+			});
+		}
+	</script>
+</body>
+</html>
