@@ -13,6 +13,17 @@
 			return a;
 		};
 
+		String.prototype.format = String.prototype.f = function() {
+			var s = this, i = arguments.length;
+
+			while (i--) {
+				s = s
+						.replace(new RegExp('\\{' + i + '\\}', 'gm'),
+								arguments[i]);
+			}
+			return s;
+		};
+
 		var levels = [ "--Select a level--", "Weak", "Poor", "Average", "Fair",
 				"Good", "Great", "Incredible", "Amazing", "Fantastic",
 				"Supreme" ];
@@ -63,17 +74,17 @@
 
 		allPowers = [ "--Select a power--" ].concat(allPowers.sort());
 
-		var standardExtras = [ "Affects Others", "Affects X", "Broadcast",
+		var standardExtras = [ "", "Affects Others", "Affects X", "Broadcast",
 				"Burst", "Contagious", "Defensive", "Effect", "Level Duration",
 				"Passengers", "Ranged", "Rangeless", "Reversible",
 				"Secondary Effect", "Slow Recovery" ];
 
-		var standardLimitations = [ "Animals Only", "Blocked by X", "Burnout",
-				"Close Range", "Concentration", "Constant", "Degrades",
-				"Exclusive", "Extra Only", "Line of Sight", "Max Only",
-				"No Stunts", "Only X", "Others Only", "Performance",
-				"Preparation", "Source", "Temporary", "Tiring", "Uncontrolled",
-				"Unpredictable", "Unstable" ];
+		var standardLimitations = [ "", "Animals Only", "Blocked by X",
+				"Burnout", "Close Range", "Concentration", "Constant",
+				"Degrades", "Exclusive", "Extra Only", "Line of Sight",
+				"Max Only", "No Stunts", "Only X", "Others Only",
+				"Performance", "Preparation", "Source", "Temporary", "Tiring",
+				"Uncontrolled", "Unpredictable", "Unstable" ];
 
 		var specialties = [ "", "Aerial Combat", "Art", "Athletics",
 				"Athletics", "Business", "Drive", "Investigation",
@@ -85,11 +96,34 @@
 				"Stealth", "Stealth", "Technology", "Technology",
 				"Underwater Combat", "Weapons", "Wrestling", "Wrestling" ];
 
+		// add the row to the table
+		var rowTemplate = '<table><tr>';
+		rowTemplate += '<td class="powerSelector"></td>';
+		rowTemplate += '<td class="powerLevel"></td>';
+		rowTemplate += '<td><button class="powerDelete">-</button>';
+		rowTemplate += '<button class="addExtra">E+</button>';
+		rowTemplate += '<button class="addLimitation")>L+</button></td>';
+		rowTemplate += '</tr><tr><td colspan=5><table class="modifiers"></table></td>';
+		rowTemplate += '</tr></table>';
+
+		var extraTemplate = '<tr>';
+		extraTemplate += '<td><button class="extraDelete">-</button></td>';
+		extraTemplate += '<td>Extra:</td>';
+		extraTemplate += '<td class="extraSelector"></td>';
+		extraTemplate += '</tr>';
+
+		var limitationTemplate = '<tr>';
+		limitationTemplate += '<td><button class="limitationDelete">-</button></td>';
+		limitationTemplate += '<td>Limitation:</td>';
+		limitationTemplate += '<td class="limitationSelector"></td>';
+		limitationTemplate += '</tr>';
+
 		var debug = function(l) {
-			var log = $('#log').append("<div>" + l + "</div");
+			var log = $('#log').prepend("<div>" + l + "</div");
 		}
 	</script>
 	<button id="addPower">+Power</button>
+	<button id="printDude">PrintDude</button>
 	<table id='powerTable' width=640>
 	</table>
 
@@ -98,21 +132,37 @@
 		var currentDude = {};
 		currentDude.powers = [];
 
-		var addPower = function(pow) {
+		var printDude = function(d, n) {
+			n = typeof n !== 'undefined' ? n : "";
+			var b = "<hr><h4>{0}</h4><h5>Powers</h5><ul>".f(n);
+			$
+					.each(
+							d.powers,
+							function(i, v) {
+								b += "<li> {0} :: {1} ({2}).   Extras:[{3}]     Limitations[{4}]<br>"
+										.f(v.power, levels[v.level], v.level,
+												v.extras.join(), v.limitations
+														.join());
+							});
+			b += "</ul>";
+			debug(b);
+		};
+
+		var addPower = function(dude, pow) {
+
 			var power = {};
 			if ($.isEmptyObject(pow)) {
 				power.power = "";
 				power.level = 0;
+				power.extras = [];
+				power.limitations = [];
 			} else {
 				power = pow;
 			}
 
 			// add the power to the dude
-			currentDude.powers.push(power)
-			var index = currentDude.powers.length - 1;
+			dude.powers.push(power)
 
-			// add the row to the table
-			var rowTemplate = '<table><tr><td class="powerSelector" colspan=2></td><td class="powerLevel"></td><td><td><button class="powerDelete" onclick="">-</button><button class="addExtra">E+</button><button class="addLimitation")>L+</button></td></tr></table>';
 			var row = rowTemplate;
 
 			//append the list of powers
@@ -123,7 +173,7 @@
 			row = $(row).find('.powerSelector').append(ddd).end()
 
 			// append the list of power levels			
-			var ddd = $("<select>")
+			ddd = $("<select>")
 			jQuery.each(levels, function(index, value) {
 				if (index === 0) {
 					ddd.append("<option value="+ index + ">" + value
@@ -134,118 +184,155 @@
 				}
 			});
 			row = $(row).find('.powerLevel').append(ddd).end();
-			
-			// set up events 
-			
-			// power changed
-			$(row).find('.powerSelector>select').change(function(e){
-				debug('power changed ' + power.power);
-				power.power = $(this).val();
-				debug(' ---> ' + power.power);
+
+			// initialize the power value
+			$(row).find('td.powerSelector>select').val(power.power);
+			$(row).find('td.powerLevel>select').val(power.level);
+			$.each(power.extras, function(i, v) {
+				addExtra(v);
 			});
-			
-			// power level changed
-			$(row).find('.powerLevel>select').change(function(e){
-				debug('powerLevel changed: ' + power.level );	
-				power.level = $(this).val();
-				debug(' ---> ' + power.level );	
-			});
-			
-			// power deleted
-			$(row).find('.powerDelete').click( function(){
-				debug('delete');
-				debug("predelete:" + currentDude.powers.length)
-				currentDude.powers = $.grep(currentDude.powers, function(v){
-					return v != power;
-				});
-				$(row).remove();
-				debug("postdelete:" + currentDude.powers.length)
-			});
-			
-			// added extra
-			$(row).find('.addExtra').click( function(){
-				debug('Add an extra');
-				// add a row to the table 
-				
-				// handle change event
-				
-				// handle delete event
-			});
-			
-			// added limitation
-			$(row).find('.addLimitation').click( function(){
-				debug('Add a limitation');
-				// add a row to the table 
-				
-				// handle change event
-				
-				// handle delete event
-			});
-			
-			
+
 			// add the completed row
 			row.appendTo('#powerTable');
 
-			
-			
-			
-			
-			
-			// initialize the power value (if it is provided)
-			$(row).find('td.powerSelector>select').val(pow.power);
-			$(row).find('td.powerLevel>select').val(pow.level);
-			
-			
-		}
+			// power select box changed 
+			$(row).find('.powerSelector>select').change(function(e) {
+				var before = power.power;
+				power.power = $(this).val();
+			});
+
+			// power level select box changed
+			$(row).find('.powerLevel>select').change(function(e) {
+				var before = power.level;
+				power.level = $(this).val();
+			});
+
+			// delete power clicked
+			$(row).find('.powerDelete').click(function() {
+				dude.powers = $.grep(dude.powers, function(v) {
+					return v != power;
+				});
+				$(row).remove();
+			});
+
+			// add extra clicked
+			$(row).find('.addExtra').click(function() {
+				power.extras.push("")
+				addExtra("");
+			});
+
+			// add limitation clicked
+			$(row).find('.addLimitation').click(function() {
+				debug('Add a limitation');
+				power.limitations.push("")
+				addLimitation("");
+			});
+
+			// adds an extra to the power
+			var addExtra = function(eee) {
+				var extra = eee;
+				if ($.isEmptyObject(eee)) {
+					extra = "";
+				}
+				// add a row to the table 
+				var extraRow = extraTemplate;
+				var ddd = $("<select>")
+				jQuery.each(standardExtras, function(index, value) {
+					ddd.append("<option>" + value + "</option>");
+				});
+
+				var extraRow = $(extraRow).find('.extraSelector').append(ddd)
+						.end();
+
+				$(row).find('.modifiers').append(extraRow).end();
+
+				// initialize the power value (if it is provided)
+				$(extraRow).find('td.extraSelector>select').val(extra);
+
+				// handle change event
+				$(extraRow).find(".extraSelector>select").change(function() {
+					debug('Change Extra Before {0}'.f(extra));
+					var before = extra;
+					extra = $(this).val();
+					power.extras = $.grep(power.extras, function(v) {
+						return v != before;
+					});
+					power.extras.push(extra);
+					debug('Change Extra After {0}'.f(extra));
+				});
+
+				// handle delete event
+				$(extraRow).find(".extraDelete").click(function() {
+					debug('Delete Extra');
+					power.extras = $.grep(power.extras, function(v) {
+						return v != extra;
+					});
+					$(extraRow).remove();
+				});
+			}; // end of addExtra
+
+			// adds a limitation ot the table
+			var addLimitation = function(eee) {
+				var limitation = eee;
+				if ($.isEmptyObject(eee)) {
+					limitation = "";
+				}
+				var limitationRow = limitationTemplate;
+
+				// add a row to the table 
+				var ddd = $("<select>")
+				jQuery.each(standardLimitations, function(index, value) {
+					ddd.append("<option>" + value + "</option>");
+				});
+
+				var limitationRow = $(limitationRow)
+						.find('.limitationSelector').append(ddd).end();
+				// initialize the power value (if it is provided)
+				$(limitationRow).find('td.limitationSelector>select').val(
+						limitation);
+
+				$(row).find('.modifiers').append(limitationRow).end();
+
+				// handle change event
+				$(limitationRow).find(".limitationSelector>select")
+						.change(
+								function() {
+									debug('Change limitation Before {0}'
+											.f(limitation));
+									var before = limitation;
+									limitation = $(this).val();
+									power.limitations = $.grep(
+											power.limitations, function(v) {
+												return v != before;
+											});
+									power.limitations.push(limitation);
+									debug('Change limitation After {0}'
+											.f(limitation));
+								});
+
+				// handle delete event
+				$(limitationRow).find(".limitationDelete").click(function() {
+					debug('Delete limitation');
+					power.limitations = $.grep(power.limitations, function(v) {
+						return v != limitation;
+					});
+					$(limitationRow).remove();
+				});
+			}; // end of addLimitation()
+		}; // end of addPower()
 
 		$('#addPower').click(function() {
-			debug('addpower');
-			
-// 			var ppp = {};
-// 			ppp.power = 'Affliction';
-// 			ppp.level = 4;
-// 			addPower(ppp);
-
 			var qqq = {};
-			qqq.power = 'Blast';
-			qqq.level = 5;
+			qqq.power = '';
+			qqq.level = 0;
 			qqq.extras = [];
 			qqq.limitations = [];
-			addPower(qqq);
+			addPower(currentDude, qqq);
 		});
 
-		$('.limitationSelector').each(function(index, element) {
-			var ddd = $("<select>")
-			jQuery.each(standardLimitations, function(index, value) {
-				ddd.append("<option>" + value + "</option>");
-			});
-			$(element).append(ddd);
+		$('#printDude').click(function() {
+			printDude(currentDude)
 		});
-		$('.extraSelector').each(function(index, element) {
-			var ddd = $("<select>")
-			jQuery.each(standardExtras, function(index, value) {
-				ddd.append("<option>" + value + "</option>");
-			});
-			$(element).append(ddd);
-		});
-
-		var addLimitation = function(powNum, lim) {
-			var template = "<tr><td><button id='delete0'>-</button></td></tr>";
-			var row = $(template);
-
-			var ddd = $("<select>")
-			$.each(standardLimitations, function(index, value) {
-				ddd.append("<option>" + value + "</option>");
-			});
-			var ccc = $("<td>")
-
-			$(row).append($("<td class='limitationSelector'>").append(ddd));
-
-			$("#power0mods").append(row);
-			$("#delete0").click(function(e) {
-				$(this).parent().parent().remove()
-			});
-		}
 	</script>
 	<hr>
 	<div id='log'></div>
