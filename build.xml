@@ -1,0 +1,17 @@
+<project name="Dropbox" default="deploy" basedir=".">
+	<description>
+        File to copy stuff to dropbox
+    </description>
+	<!-- set global properties for this build -->
+
+
+	<target name="deploy" description="copy everything to dropbox">
+		  <copy todir="C:\Users\Charles\Dropbox\Public\ICONS">
+		    <fileset dir=".">
+		    	<include name="*.html"/>
+		    	<include name="*.js"/>
+		    </fileset>
+		  </copy>
+	</target>
+
+</project>
