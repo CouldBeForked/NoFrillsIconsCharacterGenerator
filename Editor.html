@@ -4,6 +4,7 @@
 </head>
 
 <body>
+<!-- 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -13,10 +14,9 @@
   ga('create', 'UA-1395087-6', 'auto');
   ga('send', 'pageview');
 </script>
-
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-<!-- <script src="jquery.min.js"></script> -->
+ -->
+<!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script> -->
+<script src="jquery.min.js"></script> 
 
 <style>
 option.hover {
@@ -48,7 +48,7 @@ option.hover {
 	var printDude = function(dude) {
 		prepDudePrintout(dude);
 		$('.nonprintable').css('display','none');
-		$('.printable').css('display','block');
+		$('.printable').css('display','inline');
 		document.title = dude.name;
 		window.print();
 		$('.printable').css('display','none');
@@ -61,7 +61,7 @@ option.hover {
 		$("#print_level").text(dude.value);
 		$("#print_attributeValue").text(dude.attributeValue);
 		$("#print_origin").text(dude.origin);
-		$("#print_originDescription").text(originDescription[dude.origin]);
+		$("#print_originDescription").text(dude.description);
 		$("#print_prowess").text(levelDescription(dude.prowess));
 		$("#print_coordination").text(levelDescription(dude.coordination));
 		$("#print_strength").text(levelDescription(dude.strength));
@@ -87,6 +87,11 @@ option.hover {
 		$("#print_seed").text(dude.name);
 		$("#print_level").text(dude.value);
 
+		if ($.isEmptyObject(dude.img)) {
+			$("#print_img").attr("src","");			
+		} else {
+			$("#print_img").attr("src",dude.img);			
+		}
 		seed = Date.now();
 	}
 
@@ -180,7 +185,7 @@ option.hover {
 	originDescription['Birthright'] ='The hero was born with or destined to develop superhuman powers. The character gains your choice of one additional power—which should be innate, and not a device—or +2 to a rolled power level of your choice, to a maximum of 10.';
 	originDescription['Gimmick'] ='The character’s powers all come from devices of some kind. One of the character’s mental attributes of your choice is increased by +2, to a maximum of 10.';
 	originDescription['Artificial'] ='The character is a robot or some other kind of construct, such as a golem. The character’s Strength is increased by +2 and has the Life Support power in addition to any rolled powers; roll Life Support level normally, or trade a rolled power to increase it to 10.';
-	originDescription['Unearthly'] ='The character is an alien, elemental, angel, devil, or even deity—a being from another world or dimension. Increase two of the character’s abilities of your choice (attributes or powers) by +2. Alternately, roll twice on this table, ignoring duplicates and results of 11-12. The character gets the effects of both origins. Apply the modifiers of the rolled origins rather than the Unearthly modifiers.';
+	originDescription['Unearthly'] ='The character is an alien, elemental, angel, devil, or even deity — a being from another world or dimension. Increase two of the character’s abilities of your choice (attributes or powers) by +2. Alternately, roll twice on this table, ignoring duplicates and results of 11-12. The character gets the effects of both origins. Apply the modifiers of the rolled origins rather than the Unearthly modifiers.';
 	
 	var allSpecialties = specialties.unique().sort();
 
@@ -445,7 +450,9 @@ option.hover {
 
 		dude.id = seed;
 		dude.name = "Unnamed Point Based Hero!";
+		dude.img = "";
 		dude.origin = "Unknown";
+		dude.description = "";
 		dude.prowess = 0;
 		dude.coordination = 0;
 		dude.strength = 0;
@@ -454,7 +461,7 @@ option.hover {
 		dude.willpower = 0;
 		dude.powers = [];
 
-		for (var x = 0; x < 5; x++) {
+		for (var x = 0; x < 7; x++) {
 			var p = {};
 			p.power = "";
 			p.level = 0;
@@ -475,7 +482,9 @@ option.hover {
 
 		dude.id = s;
 		dude.name = "Unnamed - " + seed;
+		dude.img = "";
 		dude.origin = randomOrigin();
+		dude.description = originDescription[dude.origin];
 		dude.prowess = randomLevel();
 		dude.coordination = randomLevel();
 		dude.strength = randomLevel();
@@ -492,7 +501,7 @@ option.hover {
 			dude.powers.push(p);
 		}
 		;
-		for (var x = np; x < 5; x++) {
+		for (var x = np; x < 7; x++) {
 			var p = {};
 			p.power = "";
 			p.level = 0;
@@ -515,7 +524,11 @@ option.hover {
 
 		$("#attributeValue").text(dude.attributeValue);
 		$("#origin").text(dude.origin);
-		$("#originDescription").text(originDescription[dude.origin]);
+		
+		if ($.isEmptyObject(dude.description)) {
+			dude.description = ""
+		}
+		$("#originDescription").text(dude.description);
 
 		$("#prowess>select").val(dude.prowess);
 		$("#coordination>select").val(dude.coordination);
@@ -550,13 +563,19 @@ option.hover {
 		$("#specValue").text(dude.specValue);
 		$("#specialties").text(dude.specs.join(', '));
 		$("#charId").val(dude.name);
+		$("#charImg").val(dude.img);
 		$("#level").text(dude.value);
+		
+		if ($.isEmptyObject(dude.img)) {
+			$("#char_img").attr("src","");			
+		} else {
+			$("#char_img").attr("src",dude.img);			
+		}
+
 	}
 
 	var generate = function() {
-
 		var pointLimit = 0;
-
 		var dude = buildDude(seed);
 
 		while (pointLimit != 0 && dude.value != pointLimit) {
@@ -665,12 +684,11 @@ option.hover {
 		displayDude(currentDude);
 		refreshDudeList();
 	}
-</script>
-<script>
-$( document ).ready(function() {
-	seed = Date.now()
 
-	$('.power').each(
+	$( document ).ready(function() {
+		seed = Date.now()
+
+		$('.power').each(
 			function(index, element) {
 				var ddd = $("<select>")
 				jQuery.each(levels, function(index, value) {
@@ -698,57 +716,66 @@ $( document ).ready(function() {
 					}
 				});
 			});
-	$('.powerSelector').each(function(index, element) {
-		var ddd = $("<select>")
-		jQuery.each(allPowers, function(index, value) {
-			ddd.append("<option>" + value + "</option>");
+		$('.powerSelector').each(function(index, element) {
+			var ddd = $("<select>")
+			jQuery.each(allPowers, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			$(element).append(ddd);
+			$(element).change(function() {
+				var i = element.id;
+				var d = $(ddd).val();
+				var l = parseInt(i.replace("power", ""));
+				currentDude.powers[l].power = d;
+				calcDudeValue(currentDude);
+				displayDude(currentDude);
+			});
+	
 		});
-		$(element).append(ddd);
-		$(element).change(function() {
-			var i = element.id;
-			var d = $(ddd).val();
-			var l = parseInt(i.replace("power", ""));
-			currentDude.powers[l].power = d;
-			calcDudeValue(currentDude);
-			displayDude(currentDude);
+		$('.specSelector').each(function(index, element) {
+			var ddd = $("<select>")
+			jQuery.each(allSpecialties, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			$(element).append(ddd);
+			$(element).change(function() {
+				var i = element.id;
+				var d = $(ddd).val();
+				var l = parseInt(i.replace("spec", ""));
+				currentDude.specs[l] = d;
+				calcDudeValue(currentDude);
+				displayDude(currentDude);
+			});
 		});
-
-	});
-	$('.specSelector').each(function(index, element) {
-		var ddd = $("<select>")
-		jQuery.each(allSpecialties, function(index, value) {
-			ddd.append("<option>" + value + "</option>");
+	
+		$("#charId").change(function(data) {
+			currentDude.name = $(this).val();
 		});
-		$(element).append(ddd);
-		$(element).change(function() {
-			var i = element.id;
-			var d = $(ddd).val();
-			var l = parseInt(i.replace("spec", ""));
-			currentDude.specs[l] = d;
-			calcDudeValue(currentDude);
-			displayDude(currentDude);
+	
+		$("#charImg").change(function(data) {
+			currentDude.img = $(this).val();
+			$("#char_img").attr("src",$(this).val());			
 		});
-	});
-
-	$("#charId").change(function(data) {
-		currentDude.name = $(this).val();
-	});
-
-	currentDude = buildDude(seed);
-	displayDude(currentDude);
-
-	if (supports_html5_storage()) {
-
-		var dudeString = localStorage["dudes"];
-
-		if ($.isEmptyObject(dudeString)) {
-			dudes = [];
-		} else {
-			dudes = JSON.parse(dudeString);
-			refreshDudeList();
+	
+		$("#originDescription").change(function(data) {
+			currentDude.description = $(this).val();
+		});
+	
+		currentDude = buildDude(seed);
+		displayDude(currentDude);
+	
+		if (supports_html5_storage()) {
+	
+			var dudeString = localStorage["dudes"];
+	
+			if ($.isEmptyObject(dudeString)) {
+				dudes = [];
+			} else {
+				dudes = JSON.parse(dudeString);
+				refreshDudeList();
+			}
 		}
-	}
-})
+	})
 </script>
 
 
@@ -817,8 +844,12 @@ $( document ).ready(function() {
 							<th width=100>&nbsp;</th>
 						</tr>
 						<tr>
-							<td>ID</td>
+							<td>Name</td>
 							<td><input id="charId" type="text" style="width: 15em;"></input</td>
+						</tr>
+						<tr>
+							<td>Profile Pic URL</td>
+							<td><input id="charImg" type="text" style="width: 15em;"></input</td>
 						</tr>
 						<tr>
 							<td>Points</td>
@@ -834,7 +865,7 @@ $( document ).ready(function() {
 							<td colspan=2 id="origin"></td>
 						</tr>
 						<tr>
-							<td colspan=2 id="originDescription"></td>
+							<td colspan=2><textarea id="originDescription" name="textarea" rows="10" cols="46"></textarea></td>
 						</tr>
 						<tr>
 							<td colspan=2>&nbsp;</td>
@@ -938,11 +969,16 @@ $( document ).ready(function() {
 					</table>
 				</div>
 			</td>
+			<td valign=top>
+	<div><img id="char_img" width=320/></div>
+	</td>
 		</tr>
 	</table>
 	<div id='log'></div>
 </div>
 <div class="printable" style="display: none">
+
+<table><tr><td>
 	<table width=320>
 		<tr>
 			<th colspan=2>Identification</th>
@@ -1052,6 +1088,9 @@ $( document ).ready(function() {
 			<td colspan=2 id="print_specialties"></td>
 		</tr>
 	</table>
+	</td><td valign=top>
+	<div><img id="print_img" width=320/></div>
+	</td></tr></table>
 </div>
 
 
