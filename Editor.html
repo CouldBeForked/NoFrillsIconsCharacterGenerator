@@ -5,628 +5,650 @@
 
 <body>
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	<script>
+		(function(i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function() {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script',
+				'//www.google-analytics.com/analytics.js', 'ga');
 
-  ga('create', 'UA-1395087-6', 'auto');
-  ga('send', 'pageview');
-</script>
+		ga('create', 'UA-1395087-6', 'auto');
+		ga('send', 'pageview');
+	</script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-<!-- <script src="jquery.min.js"></script> -->
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+	<!-- <script src="jquery.min.js"></script> -->
 
-<style>
+	<style>
 option.hover {
 	background: black;
 	color: white;
 }
 </style>
 
-<script>
-	function supports_html5_storage() {
-		try {
-			return 'localStorage' in window && window['localStorage'] !== null;
-		} catch (e) {
-			return false;
-		}
-	}
-
-	Array.prototype.unique = function() {
-		var a = this.concat();
-		for (var i = 0; i < a.length; ++i) {
-			for (var j = i + 1; j < a.length; ++j) {
-				if (a[i] === a[j])
-					a.splice(j--, 1);
-			}
-		}
-		return a;
-	};
-
-	var printDude = function(dude) {
-		prepDudePrintout(dude);
-		$('.nonprintable').css('display','none');
-		$('.printable').css('display','inline');
-		document.title = dude.name;
-		window.print();
-		$('.printable').css('display','none');
-		$('.nonprintable').css('display','block');
-		document.title = 'ICONS Character Generator';
-	}
-
-	var prepDudePrintout = function(dude) {
-
-		$("#print_level").text(dude.value);
-		$("#print_attributeValue").text(dude.attributeValue);
-		$("#print_origin").text(dude.origin);
-		$("#print_originDescription").text(dude.description);
-		$("#print_prowess").text(levelDescription(dude.prowess));
-		$("#print_coordination").text(levelDescription(dude.coordination));
-		$("#print_strength").text(levelDescription(dude.strength));
-		$("#print_intellect").text(levelDescription(dude.intellect));
-		$("#print_awareness").text(levelDescription(dude.awareness));
-		$("#print_willpower").text(levelDescription(dude.willpower));
-		$("#print_powerValue").text(dude.powerValue);
-		var np = dude.powers.length;
-		for (var x = 0; x < np; x++) {
-			$("#print_power" + x).text(dude.powers[x].power);
-			$("#print_powerLevel" + x).text(
-					levelDescription(dude.powers[x].level));
-		}
-		;
-		for (var x = np; x < 5; x++) {
-			$("#print_power" + x).text("");
-			$("#print_powerLevel" + x).text("");
-		}
-		;
-
-		$("#print_specValue").text(dude.specValue);
-		$("#print_specialties").text(dude.specs.join(', '));
-		$("#print_seed").text(dude.name);
-		$("#print_level").text(dude.value);
-
-		if ($.isEmptyObject(dude.img)) {
-			$("#print_img").attr("src","");			
-		} else {
-			$("#print_img").attr("src",dude.img);			
-		}
-		seed = Date.now();
-	}
-
-	var dudes = [];
-	var currentDude = {};
-
-	var seed = 1;
-
-	function randomDave() {
-		var x = Math.sin(seed++) * 10000;
-		return x - Math.floor(x);
-	}
-
-	var roll = function() {
-		return Math.floor((randomDave() * 100000) % 6 + 1);
-	};
-
-	var levels = [ "", "Weak", "Poor", "Average", "Fair", "Good", "Great",
-			"Incredible", "Amazing", "Fantastic", "Supreme" ];
-
-	var origins = [ "Unknown", "Trained", "Transformed", "Birthright", "Gimmick",
-			"Artificial", "Unearthly" ];
-
-	var alterationPowers = [ "Ability Boost", "Ability Increase", "Alter Ego",
-			"Alternate Form", "Aquatic", "Density", "Duplication",
-			"Extra Body Parts", "Growth", "Invisibility", "Phasing",
-			"Shrinking", "Animal Mimicry", "Material Mimicry", "Plant Mimicry",
-			"Power Mimicry", "Stretching", "Transformation" ];
-
-	var controlPowers = [ "Alteration Ray", "Alteration Ray",
-			"Element Control", "Element Control", "Probability Control",
-			"Time Control", "Energy Control", "Energy Control", "Healing",
-			"Telekinesis", "Telekinesis", "Transmutation", "Cosmic Power",
-			"Gadgets", "Gadgets", "Magic", "Nullification", "Servant" ];
-
-	var defensivePowers = [ "Absorption", "Absorption", "Adaptation",
-			"Force Field", "Force Field", "Force Field", "Immortality",
-			"Life Support", "Life Support", "Life Support", "Reflection",
-			"Reflection", "Regeneration", "Regeneration", "Resistance",
-			"Resistance", "Resistance", "Resistance" ];
-
-	var mentalPowers = [ "Astral Projection", "Dream Control",
-			"Emotion Control", "Emotion Control", "Illusion", "Images",
-			"Mental Blast", "Mental Blast", "Mind Control", "Mind Shield",
-			"Telepathy", "Telepathy" ];
-
-	var movementPowers = [ "Burrowing", "Dimensional Travel", "Flight",
-			"Flight", "Leaping", "Leaping", "Spinning", "Super-Speed",
-			"Super-Speed", "Swinging", "Teleportation", "Wall-Crawling" ];
-
-	var offensivePowers = [ "Affliction", "Binding", "Blast", "Blast",
-			"Strike", "Strike", "Aura", "Dazzle", "Dazzle", "Energy Drain",
-			"Fast Attack", "Stunning" ];
-
-	var sensoryPowers = [ "Detection", "Detection", "ESP", "Super-Senses",
-			"Super-Senses", "Super-Senses", "Danger Sense", "Danger Sense",
-			"Interface", "Postcognition", "Precognition", "Precognition" ];
-
-	var allPowers = alterationPowers.concat(controlPowers.unique()).concat(
-			defensivePowers.unique()).concat(mentalPowers.unique()).concat(
-			movementPowers.unique()).concat(offensivePowers.unique()).concat(
-			sensoryPowers.unique());
-	allPowers = [ " " ].concat(allPowers.sort());
-
-	var standardExtras = [ "Affects Others", "Affects X", "Broadcast", "Burst",
-			"Contagious", "Defensive", "Effect", "Level Duration",
-			"Passengers", "Ranged", "Rangeless", "Reversible",
-			"Secondary Effect", "Slow Recovery" ];
-
-	var standardLimitations = [ "Animals Only", "Blocked by X", "Burnout",
-			"Close Range", "Concentration", "Constant", "Degrades",
-			"Exclusive", "Extra Only", "Line of Sight", "Max Only",
-			"No Stunts", "Only X", "Others Only", "Performance", "Preparation",
-			"Source", "Temporary", "Tiring", "Uncontrolled", "Unpredictable",
-			"Unstable" ];
-
-	var specialties = [ "", "Aerial Combat", "Art", "Athletics", "Athletics",
-			"Business", "Drive", "Investigation", "Investigation", "Law",
-			"Leadership", "Leadership", "Linguistics", "Martial Arts",
-			"Martial Arts", "Medicine", "Mental Resistance",
-			"Mental Resistance", "Military", "Occult", "Performance", "Pilot",
-			"Power", "Power", "Power", "Psychiatry", "Science", "Science",
-			"Sleight of Hand", "Stealth", "Stealth", "Technology",
-			"Technology", "Underwater Combat", "Weapons", "Wrestling",
-			"Wrestling" ];
-
-	var originDescription = [];
-	originDescription[''] ='';
-	originDescription['Trained'] ='The hero is a highly skilled individual; any powers actually come from superior training or specialized equipmentof your choice (attribute or power) is increased by +2 to a maximum of 10.';
-	originDescription['Transformed'] ='The hero was a normal human but became superhuman through some outside agency, often an accident or experiment. One of the character’s abilities of your choice (attribute or power) is increased by +2 to a maximum of 10.';
-	originDescription['Birthright'] ='The hero was born with or destined to develop superhuman powers. The character gains your choice of one additional power—which should be innate, and not a device—or +2 to a rolled power level of your choice, to a maximum of 10.';
-	originDescription['Gimmick'] ='The character’s powers all come from devices of some kind. One of the character’s mental attributes of your choice is increased by +2, to a maximum of 10.';
-	originDescription['Artificial'] ='The character is a robot or some other kind of construct, such as a golem. The character’s Strength is increased by +2 and has the Life Support power in addition to any rolled powers; roll Life Support level normally, or trade a rolled power to increase it to 10.';
-	originDescription['Unearthly'] ='The character is an alien, elemental, angel, devil, or even deity — a being from another world or dimension. Increase two of the character’s abilities of your choice (attributes or powers) by +2. Alternately, roll twice on this table, ignoring duplicates and results of 11-12. The character gets the effects of both origins. Apply the modifiers of the rolled origins rather than the Unearthly modifiers.';
+	<script>
 	
-	var allSpecialties = specialties.unique().sort();
-
-	var alteration = function(r1, r2) {
-		switch (r1) {
-		case 1:
-		case 2:
-			return alterationPowers[r2 - 1];
-		case 3:
-		case 4:
-			return alterationPowers[6 + r2 - 1];
-		case 5:
-		case 6:
-			return alterationPowers[12 + r2 - 1];
-		}
-		return "NO POWER";
-	};
-
-	var control = function(r1, r2) {
-		switch (r1) {
-		case 1:
-		case 2:
-			return controlPowers[r2 - 1];
-		case 3:
-		case 4:
-			return controlPowers[6 + r2 - 1];
-		case 5:
-		case 6:
-			return controlPowers[12 + r2 - 1];
-		}
-		return "NO POWER";
-	};
-
-	var defensive = function(r1, r2) {
-		switch (r1) {
-		case 1:
-		case 2:
-			return defensivePowers[r2 - 1];
-		case 3:
-		case 4:
-			return defensivePowers[6 + r2 - 1];
-		case 5:
-		case 6:
-			return defensivePowers[12 + r2 - 1];
-		}
-		return "NO POWER";
-	};
-
-	var mental = function(r1, r2) {
-		switch (r1) {
-		case 1:
-		case 2:
-		case 3:
-			return mentalPowers[r2 - 1];
-		case 4:
-		case 5:
-		case 6:
-			return mentalPowers[6 + r2 - 1];
-		}
-		return "NO POWER";
-	};
-
-	var movement = function(r1, r2) {
-		switch (r1) {
-		case 1:
-		case 2:
-		case 3:
-			return movementPowers[r2 - 1];
-		case 4:
-		case 5:
-		case 6:
-			return movementPowers[6 + r2 - 1];
-		}
-		return "NO POWER";
-	};
-
-	var offensive = function(r1, r2) {
-		switch (r1) {
-		case 1:
-		case 2:
-		case 3:
-			return offensivePowers[r2 - 1];
-		case 4:
-		case 5:
-		case 6:
-			return offensivePowers[6 + r2 - 1];
-		}
-		return "NO POWER";
-	}
-
-	var sensory = function(r1, r2) {
-		switch (r1) {
-		case 1:
-		case 2:
-		case 3:
-			return sensoryPowers[r2 - 1];
-		case 4:
-		case 5:
-		case 6:
-			return sensoryPowers[6 + r2 - 1];
-		}
-		return "NO POWER";
-	}
-
-	var levelScore = function(r) {
-		switch (r) {
-		case 2:
-			return 1;
-		case 3:
-			return 2;
-		case 4:
-			return 3;
-		case 5:
-		case 6:
-			return 4;
-		case 7:
-		case 8:
-			return 5;
-		case 9:
-		case 10:
-			return 6;
-		case 11:
-			return 7;
-		case 12:
-			return 8;
-		}
-		;
-	};
-
-	function randomLevel() {
-		var l = levelScore(roll() + roll());
-		return l;
-	};
-
-	var levelDescription = function(l) {
-		if (l === 0) {
-			return "";
-		} else {
-			return "" + levels[l] + " (" + l + ")";
-		}
-	}
-
-	var randomOrigin = function() {
-		switch (roll() + roll()) {
-		case 2:
-		case 3:
-		case 4:
-			return origins[1];
-		case 5:
-		case 6:
-			return origins[2];
-		case 7:
-			return origins[3];
-		case 8:
-		case 9:
-			return origins[4];
-		case 10:
-			return origins[5];
-		case 11:
-		case 12:
-			return origins[6];
-		}
-	}
-
-	var randomNumPow = function() {
-		var r = roll() + roll();
-		switch (r) {
-		case 2:
-		case 3:
-		case 4:
-			return 2;
-		case 5:
-		case 6:
-		case 7:
-			return 3;
-		case 8:
-		case 9:
-		case 10:
-			return 4;
-		case 11:
-		case 12:
-			return 5;
-		}
-	};
-
-	var randomPower = function() {
-		var t = roll() + roll();
-		switch (t) {
-		case 2:
-		case 3:
-			return mental(roll(), roll());
-		case 4:
-		case 5:
-			return control(roll(), roll());
-		case 6:
-			return defensive(roll(), roll());
-		case 7:
-			return offensive(roll(), roll());
-		case 8:
-			return movement(roll(), roll());
-		case 9:
-		case 10:
-			return alteration(roll(), roll());
-		case 11:
-		case 12:
-			return sensory(roll(), roll());
-		}
-		;
-		return "NO POWER";
-	};
-
-	var numSpec = function(r) {
-		switch (r) {
-		case 2:
-		case 3:
-		case 4:
-			return 1;
-		case 5:
-		case 6:
-		case 7:
-			return 2;
-		case 8:
-		case 9:
-		case 10:
-			return 3;
-		case 11:
-		case 12:
-			return 4;
-		}
-		;
-	}
-
-	var randomNumSpec = function() {
-		var l = numSpec(roll() + roll());
-		return l;
-	};
-
-	var randomSpec = function() {
-		var l = ((roll() - 1) * 6) + (roll() - 1);
-		return specialties[l + 1];
-	}
-
-	var calcDudeValue = function(dude) {
-		dude.attributeValue = dude.prowess + dude.coordination + dude.strength
-				+ dude.intellect + dude.awareness + dude.willpower;
-		dude.powerValue = 0;
-		for (var x = 0; x < dude.powers.length; x++) {
-			dude.powerValue += dude.powers[x].level;
-		}
-		;
-		dude.specValue = 0;
-		$.each(dude.specs, function(index, value) {
-			if (!$.isEmptyObject(value)) {
-				dude.specValue++;
+		var TRANSPARENT_IMAGE = "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
+	
+		function supports_html5_storage() {
+			try {
+				return 'localStorage' in window
+						&& window['localStorage'] !== null;
+			} catch (e) {
+				return false;
 			}
-		});
-		dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
-	}
-
-	var buildNullDude = function(seed) {
-		var dude = {};
-
-		dude.id = seed;
-		dude.name = "Unnamed Point Based Hero!";
-		dude.img = "";
-		dude.origin = "Unknown";
-		dude.description = "";
-		dude.prowess = 0;
-		dude.coordination = 0;
-		dude.strength = 0;
-		dude.intellect = 0;
-		dude.awareness = 0;
-		dude.willpower = 0;
-		dude.powers = [];
-
-		for (var x = 0; x < 7; x++) {
-			var p = {};
-			p.power = "";
-			p.level = 0;
-			dude.powers.push(p);
 		}
-		;
-		dude.specs = [];
-		var ns = 0;
 
-		calcDudeValue(dude);
-
-		seed = Date.now();
-		return dude;
-	};
-
-	var buildDude = function(s) {
-		var dude = {};
-
-		dude.id = s;
-		dude.name = "Unnamed - " + seed;
-		dude.img = "";
-		dude.origin = randomOrigin();
-		dude.description = originDescription[dude.origin];
-		dude.prowess = randomLevel();
-		dude.coordination = randomLevel();
-		dude.strength = randomLevel();
-		dude.intellect = randomLevel();
-		dude.awareness = randomLevel();
-		dude.willpower = randomLevel();
-		dude.powers = [];
-
-		var np = randomNumPow();
-		for (var x = 0; x < np; x++) {
-			var p = {};
-			p.power = randomPower();
-			p.level = randomLevel();
-			dude.powers.push(p);
-		}
-		;
-		for (var x = np; x < 7; x++) {
-			var p = {};
-			p.power = "";
-			p.level = 0;
-			dude.powers.push(p);
-		}
-		dude.specs = [];
-		var ns = randomNumSpec();
-		for (var x = 0; x < ns; x++) {
-			dude.specs.push(randomSpec());
-		}
-		;
-
-		calcDudeValue(dude);
-
-		seed = Date.now();
-		return dude;
-	};
-
-	var displayDude = function(dude) {
-
-		$("#attributeValue").text(dude.attributeValue);
-		$("#origin").text(dude.origin);
+		Array.prototype.unique = function() {
+			var a = this.concat();
+			for (var i = 0; i < a.length; ++i) {
+				for (var j = i + 1; j < a.length; ++j) {
+					if (a[i] === a[j])
+						a.splice(j--, 1);
+				}
+			}
+			return a;
+		};
 		
-		if ($.isEmptyObject(dude.description)) {
-			dude.description = ""
-		}
-		$("#originDescription").text(dude.description);
-
-		$("#prowess>select").val(dude.prowess);
-		$("#coordination>select").val(dude.coordination);
-		$("#strength>select").val(dude.strength);
-		$("#intellect>select").val(dude.intellect);
-		$("#awareness>select").val(dude.awareness);
-		$("#willpower>select").val(dude.willpower);
-
-		$("#powerValue").text(dude.powerValue);
-		var np = dude.powers.length;
-		for (var x = 0; x < np; x++) {
-			$("#power" + x + ">select").val(dude.powers[x].power);
-			$("#powerLevel" + x + ">select").val(dude.powers[x].level);
-		}
-		;
-		for (var x = np; x < 7; x++) {
-			$("#power" + x + ">select").val("");
-			$("#powerLevel" + x + ">select").val(0);
-		}
-		;
-
-		var ns = dude.specs.length;
-		for (var x = 0; x < ns; x++) {
-			$("#spec" + x + ">select").val(dude.specs[x]);
-		}
-		;
-		for (var x = ns; x < 8; x++) {
-			$("#spec" + x + ">select").val("");
-		}
-		;
-
-		$("#specValue").text(dude.specValue);
-		$("#specialties").text(dude.specs.join(', '));
-		$("#charId").val(dude.name);
-		$("#charImg").val(dude.img);
-		$("#level").text(dude.value);
-		
-		if ($.isEmptyObject(dude.img)) {
-			$("#char_img").attr("src","");			
-		} else {
-			$("#char_img").attr("src",dude.img);			
+		var printOldDude = function(dude) {
+			prepDudePrintout(dude);
+			$('.nonprintable').css('display', 'none');
+			$('#print-template').css('display', 'inline');
+			document.title = dude.name;
+			window.print();
+			$('#print-template').css('display', 'none');
+			$('.nonprintable').css('display', 'block');
+			document.title = 'ICONS Character Generator';
 		}
 
-	}
+	    var printDude = function(dude) {
+	        prepDudePrintout(dude);
+	        var wnd = window.open("about:blank","_blank");
+	        var h = $('.printable').html();
+	        wnd.document.title = dude.name;
+	        wnd.document.writeln(h);
+	    }
+	    
+		var prepDudePrintout = function(dude) {
 
-	var generate = function() {
-		var pointLimit = 0;
-		var dude = buildDude(seed);
+			$("#print_level").text(dude.value);
+			$("#print_attributeValue").text(dude.attributeValue);
+			$("#print_origin").text(dude.origin);
+			$("#print_originDescription").text(dude.description);
+			$("#print_prowess").text(levelDescription(dude.prowess));
+			$("#print_coordination").text(levelDescription(dude.coordination));
+			$("#print_strength").text(levelDescription(dude.strength));
+			$("#print_intellect").text(levelDescription(dude.intellect));
+			$("#print_awareness").text(levelDescription(dude.awareness));
+			$("#print_willpower").text(levelDescription(dude.willpower));
+			$("#print_stamina").text(calcStamina(dude));
+			$("#print_powerValue").text(dude.powerValue);
+			$("#print_quality1").text(dude.quality1);
+			$("#print_quality2").text(dude.quality2);
+			$("#print_quality3").text(dude.quality3);
 
-		while (pointLimit != 0 && dude.value != pointLimit) {
-			dude = buildDude(seed);
+			var np = dude.powers.length;
+			for (var x = 0; x < np; x++) {
+				$("#print_power" + x).text(dude.powers[x].power);
+				$("#print_powerLevel" + x).text(
+						levelDescription(dude.powers[x].level));
+			}
+			;
+			for (var x = np; x < 5; x++) {
+				$("#print_power" + x).text("");
+				$("#print_powerLevel" + x).text("");
+			}
+			;
+
+			$("#print_specValue").text(dude.specValue);
+			$("#print_specialties").text(dude.specs.join(', '));
+			$("#print_seed").text(dude.name);
+			$("#print_level").text(dude.value);
+
+			if ($.isEmptyObject(dude.img)) {
+				$("#print_img").attr("src", TRANSPARENT_IMAGE);
+			} else {
+				$("#print_img").attr("src", dude.img);
+			}
+			seed = Date.now();
 		}
-		displayDude(dude);
-		currentDude = dude;
 
-		seed = Date.now();
-	}
+		var dudes = [];
+		var currentDude = {};
 
-	var createNew = function() {
-		var dude = buildNullDude(seed);
-		displayDude(dude);
-		currentDude = dude;
-		seed = Date.now();
-	}
+		var seed = 1;
 
-	var appendLog = function(d) {
-		var s = d.name;
-		var col = $('#history');
-		var entry = $("<option id='" + d.id + "'>" + d.name + "</option>");
-		col.append(entry);
+		function randomDave() {
+			var x = Math.sin(seed++) * 10000;
+			return x - Math.floor(x);
+		}
 
-		entry.click(function() {
-			currentDude = d;
-			displayDude(d);
-		});
+		var roll = function() {
+			return Math.floor((randomDave() * 100000) % 6 + 1);
+		};
 
-		entry.hover(function() {
-			entry.addClass("hover")
-		}, function() {
-			entry.removeClass("hover")
-		});
-	}
+		var levels = [ "", "Weak", "Poor", "Average", "Fair", "Good", "Great",
+				"Incredible", "Amazing", "Fantastic", "Supreme" ];
 
-	var debug = function(l) {
-		var log = $('#log').append("<div>" + l + "</div");
-	}
+		var origins = [ "Unknown", "Trained", "Transformed", "Birthright",
+				"Gimmick", "Artificial", "Unearthly" ];
 
-	var refreshDudeList = function() {
-		$("#history").empty();
-		$.each(dudes, function(index, dude) {
+		var alterationPowers = [ "Ability Boost", "Ability Increase",
+				"Alter Ego", "Alternate Form", "Aquatic", "Density",
+				"Duplication", "Extra Body Parts", "Growth", "Invisibility",
+				"Phasing", "Shrinking", "Animal Mimicry", "Material Mimicry",
+				"Plant Mimicry", "Power Mimicry", "Stretching",
+				"Transformation" ];
+
+		var controlPowers = [ "Alteration Ray", "Alteration Ray",
+				"Element Control", "Element Control", "Probability Control",
+				"Time Control", "Energy Control", "Energy Control", "Healing",
+				"Telekinesis", "Telekinesis", "Transmutation", "Cosmic Power",
+				"Gadgets", "Gadgets", "Magic", "Nullification", "Servant" ];
+
+		var defensivePowers = [ "Absorption", "Absorption", "Adaptation",
+				"Force Field", "Force Field", "Force Field", "Immortality",
+				"Life Support", "Life Support", "Life Support", "Reflection",
+				"Reflection", "Regeneration", "Regeneration", "Resistance",
+				"Resistance", "Resistance", "Resistance" ];
+
+		var mentalPowers = [ "Astral Projection", "Dream Control",
+				"Emotion Control", "Emotion Control", "Illusion", "Images",
+				"Mental Blast", "Mental Blast", "Mind Control", "Mind Shield",
+				"Telepathy", "Telepathy" ];
+
+		var movementPowers = [ "Burrowing", "Dimensional Travel", "Flight",
+				"Flight", "Leaping", "Leaping", "Spinning", "Super-Speed",
+				"Super-Speed", "Swinging", "Teleportation", "Wall-Crawling" ];
+
+		var offensivePowers = [ "Affliction", "Binding", "Blast", "Blast",
+				"Strike", "Strike", "Aura", "Dazzle", "Dazzle", "Energy Drain",
+				"Fast Attack", "Stunning" ];
+
+		var sensoryPowers = [ "Detection", "Detection", "ESP", "Super-Senses",
+				"Super-Senses", "Super-Senses", "Danger Sense", "Danger Sense",
+				"Interface", "Postcognition", "Precognition", "Precognition" ];
+
+		var allPowers = alterationPowers.concat(controlPowers.unique()).concat(
+				defensivePowers.unique()).concat(mentalPowers.unique()).concat(
+				movementPowers.unique()).concat(offensivePowers.unique())
+				.concat(sensoryPowers.unique());
+		allPowers = [ " " ].concat(allPowers.sort());
+
+		var standardExtras = [ "Affects Others", "Affects X", "Broadcast",
+				"Burst", "Contagious", "Defensive", "Effect", "Level Duration",
+				"Passengers", "Ranged", "Rangeless", "Reversible",
+				"Secondary Effect", "Slow Recovery" ];
+
+		var standardLimitations = [ "Animals Only", "Blocked by X", "Burnout",
+				"Close Range", "Concentration", "Constant", "Degrades",
+				"Exclusive", "Extra Only", "Line of Sight", "Max Only",
+				"No Stunts", "Only X", "Others Only", "Performance",
+				"Preparation", "Source", "Temporary", "Tiring", "Uncontrolled",
+				"Unpredictable", "Unstable" ];
+
+		var specialties = [ "", "Aerial Combat", "Art", "Athletics",
+				"Athletics", "Business", "Drive", "Investigation",
+				"Investigation", "Law", "Leadership", "Leadership",
+				"Linguistics", "Martial Arts", "Martial Arts", "Medicine",
+				"Mental Resistance", "Mental Resistance", "Military", "Occult",
+				"Performance", "Pilot", "Power", "Power", "Power",
+				"Psychiatry", "Science", "Science", "Sleight of Hand",
+				"Stealth", "Stealth", "Technology", "Technology",
+				"Underwater Combat", "Weapons", "Wrestling", "Wrestling" ];
+
+		var originDescription = [];
+		originDescription[''] = '';
+		originDescription['Trained'] = 'The hero is a highly skilled individual; any powers actually come from superior training or specialized equipmentof your choice (attribute or power) is increased by +2 to a maximum of 10.';
+		originDescription['Transformed'] = 'The hero was a normal human but became superhuman through some outside agency, often an accident or experiment. One of the character’s abilities of your choice (attribute or power) is increased by +2 to a maximum of 10.';
+		originDescription['Birthright'] = 'The hero was born with or destined to develop superhuman powers. The character gains your choice of one additional power—which should be innate, and not a device—or +2 to a rolled power level of your choice, to a maximum of 10.';
+		originDescription['Gimmick'] = 'The character’s powers all come from devices of some kind. One of the character’s mental attributes of your choice is increased by +2, to a maximum of 10.';
+		originDescription['Artificial'] = 'The character is a robot or some other kind of construct, such as a golem. The character’s Strength is increased by +2 and has the Life Support power in addition to any rolled powers; roll Life Support level normally, or trade a rolled power to increase it to 10.';
+		originDescription['Unearthly'] = 'The character is an alien, elemental, angel, devil, or even deity — a being from another world or dimension. Increase two of the character’s abilities of your choice (attributes or powers) by +2. Alternately, roll twice on this table, ignoring duplicates and results of 11-12. The character gets the effects of both origins. Apply the modifiers of the rolled origins rather than the Unearthly modifiers.';
+
+		var allSpecialties = specialties.unique().sort();
+
+		var alteration = function(r1, r2) {
+			switch (r1) {
+			case 1:
+			case 2:
+				return alterationPowers[r2 - 1];
+			case 3:
+			case 4:
+				return alterationPowers[6 + r2 - 1];
+			case 5:
+			case 6:
+				return alterationPowers[12 + r2 - 1];
+			}
+			return "NO POWER";
+		};
+
+		var control = function(r1, r2) {
+			switch (r1) {
+			case 1:
+			case 2:
+				return controlPowers[r2 - 1];
+			case 3:
+			case 4:
+				return controlPowers[6 + r2 - 1];
+			case 5:
+			case 6:
+				return controlPowers[12 + r2 - 1];
+			}
+			return "NO POWER";
+		};
+
+		var defensive = function(r1, r2) {
+			switch (r1) {
+			case 1:
+			case 2:
+				return defensivePowers[r2 - 1];
+			case 3:
+			case 4:
+				return defensivePowers[6 + r2 - 1];
+			case 5:
+			case 6:
+				return defensivePowers[12 + r2 - 1];
+			}
+			return "NO POWER";
+		};
+
+		var mental = function(r1, r2) {
+			switch (r1) {
+			case 1:
+			case 2:
+			case 3:
+				return mentalPowers[r2 - 1];
+			case 4:
+			case 5:
+			case 6:
+				return mentalPowers[6 + r2 - 1];
+			}
+			return "NO POWER";
+		};
+
+		var movement = function(r1, r2) {
+			switch (r1) {
+			case 1:
+			case 2:
+			case 3:
+				return movementPowers[r2 - 1];
+			case 4:
+			case 5:
+			case 6:
+				return movementPowers[6 + r2 - 1];
+			}
+			return "NO POWER";
+		};
+
+		var offensive = function(r1, r2) {
+			switch (r1) {
+			case 1:
+			case 2:
+			case 3:
+				return offensivePowers[r2 - 1];
+			case 4:
+			case 5:
+			case 6:
+				return offensivePowers[6 + r2 - 1];
+			}
+			return "NO POWER";
+		}
+
+		var sensory = function(r1, r2) {
+			switch (r1) {
+			case 1:
+			case 2:
+			case 3:
+				return sensoryPowers[r2 - 1];
+			case 4:
+			case 5:
+			case 6:
+				return sensoryPowers[6 + r2 - 1];
+			}
+			return "NO POWER";
+		}
+
+		var levelScore = function(r) {
+			switch (r) {
+			case 2:
+				return 1;
+			case 3:
+				return 2;
+			case 4:
+				return 3;
+			case 5:
+			case 6:
+				return 4;
+			case 7:
+			case 8:
+				return 5;
+			case 9:
+			case 10:
+				return 6;
+			case 11:
+				return 7;
+			case 12:
+				return 8;
+			}
+			;
+		};
+
+		function randomLevel() {
+			var l = levelScore(roll() + roll());
+			return l;
+		};
+
+		var levelDescription = function(l) {
+			if (l === 0) {
+				return "";
+			} else {
+				return "" + levels[l] + " (" + l + ")";
+			}
+		}
+
+		var randomOrigin = function() {
+			switch (roll() + roll()) {
+			case 2:
+			case 3:
+			case 4:
+				return origins[1];
+			case 5:
+			case 6:
+				return origins[2];
+			case 7:
+				return origins[3];
+			case 8:
+			case 9:
+				return origins[4];
+			case 10:
+				return origins[5];
+			case 11:
+			case 12:
+				return origins[6];
+			}
+		}
+
+		var randomNumPow = function() {
+			var r = roll() + roll();
+			switch (r) {
+			case 2:
+			case 3:
+			case 4:
+				return 2;
+			case 5:
+			case 6:
+			case 7:
+				return 3;
+			case 8:
+			case 9:
+			case 10:
+				return 4;
+			case 11:
+			case 12:
+				return 5;
+			}
+		};
+
+		var randomPower = function() {
+			var t = roll() + roll();
+			switch (t) {
+			case 2:
+			case 3:
+				return mental(roll(), roll());
+			case 4:
+			case 5:
+				return control(roll(), roll());
+			case 6:
+				return defensive(roll(), roll());
+			case 7:
+				return offensive(roll(), roll());
+			case 8:
+				return movement(roll(), roll());
+			case 9:
+			case 10:
+				return alteration(roll(), roll());
+			case 11:
+			case 12:
+				return sensory(roll(), roll());
+			}
+			;
+			return "NO POWER";
+		};
+
+		var numSpec = function(r) {
+			switch (r) {
+			case 2:
+			case 3:
+			case 4:
+				return 1;
+			case 5:
+			case 6:
+			case 7:
+				return 2;
+			case 8:
+			case 9:
+			case 10:
+				return 3;
+			case 11:
+			case 12:
+				return 4;
+			}
+			;
+		}
+
+		var randomNumSpec = function() {
+			var l = numSpec(roll() + roll());
+			return l;
+		};
+
+		var randomSpec = function() {
+			var l = ((roll() - 1) * 6) + (roll() - 1);
+			return specialties[l + 1];
+		}
+
+		var calcDudeValue = function(dude) {
+			dude.attributeValue = dude.prowess + dude.coordination
+					+ dude.strength + dude.intellect + dude.awareness
+					+ dude.willpower;
+			dude.powerValue = 0;
+			for (var x = 0; x < dude.powers.length; x++) {
+				dude.powerValue += dude.powers[x].level;
+			}
+			;
+			dude.specValue = 0;
+			$.each(dude.specs, function(index, value) {
+				if (!$.isEmptyObject(value)) {
+					dude.specValue++;
+				}
+			});
+			dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
+		}
+
+		var calcStamina = function(dude) {
+			return dude.strength + dude.willpower;
+		}
+
+		var buildNullDude = function(seed) {
+			var dude = {};
+
+			dude.id = seed;
+			dude.name = "Unnamed Point Based Hero!";
+			dude.img = "";
+			dude.origin = "Unknown";
+			dude.description = "";
+			dude.prowess = 0;
+			dude.coordination = 0;
+			dude.strength = 0;
+			dude.intellect = 0;
+			dude.awareness = 0;
+			dude.willpower = 0;
+			dude.quality1 = "";
+			dude.quality2 = "";
+			dude.quality3 = "";
+			dude.powers = [];
+
+			for (var x = 0; x < 7; x++) {
+				var p = {};
+				p.power = "";
+				p.level = 0;
+				dude.powers.push(p);
+			}
+			;
+			dude.specs = [];
+			var ns = 0;
+
+			calcDudeValue(dude);
+
+			seed = Date.now();
+			return dude;
+		};
+
+		var buildDude = function(s) {
+			var dude = {};
+
+			dude.id = s;
+			dude.name = "Unnamed - " + seed;
+			dude.img = "";
+			dude.origin = randomOrigin();
+			dude.description = originDescription[dude.origin];
+			dude.prowess = randomLevel();
+			dude.coordination = randomLevel();
+			dude.strength = randomLevel();
+			dude.intellect = randomLevel();
+			dude.awareness = randomLevel();
+			dude.willpower = randomLevel();
+			dude.quality1 = "";
+			dude.quality2 = "";
+			dude.quality3 = "";
+
+			dude.powers = [];
+
+			var np = randomNumPow();
+			for (var x = 0; x < np; x++) {
+				var p = {};
+				p.power = randomPower();
+				p.level = randomLevel();
+				dude.powers.push(p);
+			}
+			;
+			for (var x = np; x < 7; x++) {
+				var p = {};
+				p.power = "";
+				p.level = 0;
+				dude.powers.push(p);
+			}
+			dude.specs = [];
+			var ns = randomNumSpec();
+			for (var x = 0; x < ns; x++) {
+				dude.specs.push(randomSpec());
+			}
+			;
+
+			calcDudeValue(dude);
+
+			seed = Date.now();
+			return dude;
+		};
+
+		var displayDude = function(dude) {
+
+			$("#attributeValue").text(dude.attributeValue);
+			$("#origin").text(dude.origin);
+
+			if ($.isEmptyObject(dude.description)) {
+				dude.description = ""
+			}
+			$("#originDescription").text(dude.description);
+
+			$("#quality1").text(dude.quality1);
+			$("#quality2").text(dude.quality2);
+			$("#quality3").text(dude.quality3);
+
+			$("#prowess>select").val(dude.prowess);
+			$("#coordination>select").val(dude.coordination);
+			$("#strength>select").val(dude.strength);
+			$("#intellect>select").val(dude.intellect);
+			$("#awareness>select").val(dude.awareness);
+			$("#willpower>select").val(dude.willpower);
+
+			$("#powerValue").text(dude.powerValue);
+			var np = dude.powers.length;
+			for (var x = 0; x < np; x++) {
+				$("#power" + x + ">select").val(dude.powers[x].power);
+				$("#powerLevel" + x + ">select").val(dude.powers[x].level);
+			}
+			;
+			for (var x = np; x < 7; x++) {
+				$("#power" + x + ">select").val("");
+				$("#powerLevel" + x + ">select").val(0);
+			}
+			;
+
+			var ns = dude.specs.length;
+			for (var x = 0; x < ns; x++) {
+				$("#spec" + x + ">select").val(dude.specs[x]);
+			}
+			;
+			for (var x = ns; x < 8; x++) {
+				$("#spec" + x + ">select").val("");
+			}
+			;
+
+			$("#specValue").text(dude.specValue);
+			$("#specialties").text(dude.specs.join(', '));
+			$("#charId").val(dude.name);
+			if ($.isEmptyObject(dude.img)) {
+				$("#charImg").attr("src", TRANSPARENT_IMAGE);
+			} else {
+				$("#charImg").attr("src", dude.img);
+			}
+			$("#level").text(dude.value);
+
+			if ($.isEmptyObject(dude.img)) {
+				$("#char_img").attr("src", "");
+			} else {
+				$("#char_img").attr("src", dude.img);
+			}
+
+		}
+
+		var generate = function() {
+			var pointLimit = 0;
+			var dude = buildDude(seed);
+
+			while (pointLimit != 0 && dude.value != pointLimit) {
+				dude = buildDude(seed);
+			}
+			displayDude(dude);
+			currentDude = dude;
+
+			seed = Date.now();
+		}
+
+		var createNew = function() {
+			var dude = buildNullDude(seed);
+			displayDude(dude);
+			currentDude = dude;
+			seed = Date.now();
+		}
+
+		var appendLog = function(d) {
+			var s = d.name;
 			var col = $('#history');
-			var entry = $("<option id='" + dude.id + "'>" + dude.name
-					+ "</option>");
+			var entry = $("<option id='" + d.id + "'>" + d.name + "</option>");
 			col.append(entry);
 
 			entry.click(function() {
-				currentDude = dude;
-				displayDude(dude);
+				currentDude = d;
+				displayDude(d);
 			});
 
 			entry.hover(function() {
@@ -634,149 +656,225 @@ option.hover {
 			}, function() {
 				entry.removeClass("hover")
 			});
-		});
-	}
-
-	var saveDude = function(dude) {
-		var foundIt = false;
-		$.each(dudes, function(index, value) {
-			if (dude.id === value.id) {
-				foundIt = true;
-				return false;
-			}
-			;
-		});
-		if (foundIt === false) {
-			dudes.push(dude);
 		}
-		dudes.sort(function(a, b) {
-			if (a.name < b.name)
-				return -1;
-			if (a.name > b.name)
-				return 1;
-			return 0;
-		});
 
-		if (supports_html5_storage()) {
-			localStorage["dudes"] = JSON.stringify(dudes);
+		var debug = function(l) {
+			var log = $('#log').append("<div>" + l + "</div");
 		}
-		refreshDudeList();
-	}
 
-	var deleteDude = function(dude) {
-		dudes = dudes.filter(function(e) {
-			return e.id != dude.id;
-		});
-		if (supports_html5_storage()) {
-			localStorage["dudes"] = JSON.stringify(dudes);
-		}
-		refreshDudeList();
-		currentDude = buildNullDude(seed);
-		displayDude(currentDude);
-	}
+		var refreshDudeList = function() {
+			$("#history").empty();
+			$.each(dudes, function(index, dude) {
+				var col = $('#history');
+				var entry = $("<option id='" + dude.id + "'>" + dude.name
+						+ "</option>");
+				col.append(entry);
 
-	var deleteAllDudes = function() {
-		dudes = []
-		if (supports_html5_storage()) {
-			localStorage["dudes"] = JSON.stringify(dudes);
-		}
-		currentDude = buildNullDude(seed);
-		displayDude(currentDude);
-		refreshDudeList();
-	}
-
-	$( document ).ready(function() {
-		seed = Date.now()
-
-		$('.power').each(
-			function(index, element) {
-				var ddd = $("<select>")
-				jQuery.each(levels, function(index, value) {
-					if (index === 0) {
-						ddd.append("<option value="+ index + ">" + value
-								+ "</option>");
-					} else {
-						ddd.append("<option value="+index+">" + value + " ("
-								+ (index) + ")</option>");
-					}
+				entry.click(function() {
+					currentDude = dude;
+					displayDude(dude);
 				});
-				$(element).append(ddd);
-				$(element).change(function() {
-					var i = element.id;
-					var d = $(ddd).val();
-					if (i.indexOf("powerLevel") == -1) {
-						currentDude[i] = parseInt(d);
-						calcDudeValue(currentDude);
-						displayDude(currentDude);
-					} else {
-						var l = parseInt(i.replace("powerLevel", ""));
-						currentDude.powers[l].level = parseInt(d);
-						calcDudeValue(currentDude);
-						displayDude(currentDude);
-					}
+
+				entry.hover(function() {
+					entry.addClass("hover")
+				}, function() {
+					entry.removeClass("hover")
 				});
 			});
-		$('.powerSelector').each(function(index, element) {
-			var ddd = $("<select>")
-			jQuery.each(allPowers, function(index, value) {
-				ddd.append("<option>" + value + "</option>");
-			});
-			$(element).append(ddd);
-			$(element).change(function() {
-				var i = element.id;
-				var d = $(ddd).val();
-				var l = parseInt(i.replace("power", ""));
-				currentDude.powers[l].power = d;
-				calcDudeValue(currentDude);
-				displayDude(currentDude);
-			});
-	
-		});
-		$('.specSelector').each(function(index, element) {
-			var ddd = $("<select>")
-			jQuery.each(allSpecialties, function(index, value) {
-				ddd.append("<option>" + value + "</option>");
-			});
-			$(element).append(ddd);
-			$(element).change(function() {
-				var i = element.id;
-				var d = $(ddd).val();
-				var l = parseInt(i.replace("spec", ""));
-				currentDude.specs[l] = d;
-				calcDudeValue(currentDude);
-				displayDude(currentDude);
-			});
-		});
-	
-		$("#charId").change(function(data) {
-			currentDude.name = $(this).val();
-		});
-	
-		$("#charImg").change(function(data) {
-			currentDude.img = $(this).val();
-			$("#char_img").attr("src",$(this).val());			
-		});
-	
-		$("#originDescription").change(function(data) {
-			currentDude.description = $(this).val();
-		});
-	
-		currentDude = buildDude(seed);
-		displayDude(currentDude);
-	
-		if (supports_html5_storage()) {
-	
-			var dudeString = localStorage["dudes"];
-	
-			if ($.isEmptyObject(dudeString)) {
-				dudes = [];
-			} else {
-				dudes = JSON.parse(dudeString);
-				refreshDudeList();
-			}
 		}
-	})
-</script>
+
+		var saveDude = function(dude) {
+			var foundIt = false;
+			$.each(dudes, function(index, value) {
+				if (dude.id === value.id) {
+					foundIt = true;
+					return false;
+				}
+				;
+			});
+			if (foundIt === false) {
+				dudes.push(dude);
+			}
+			dudes.sort(function(a, b) {
+				if (a.name < b.name)
+					return -1;
+				if (a.name > b.name)
+					return 1;
+				return 0;
+			});
+
+			if (supports_html5_storage()) {
+				localStorage["dudes"] = JSON.stringify(dudes);
+			}
+			refreshDudeList();
+		}
+
+		var deleteDude = function(dude) {
+			dudes = dudes.filter(function(e) {
+				return e.id != dude.id;
+			});
+			if (supports_html5_storage()) {
+				localStorage["dudes"] = JSON.stringify(dudes);
+			}
+			refreshDudeList();
+			currentDude = buildNullDude(seed);
+			displayDude(currentDude);
+		}
+
+		var deleteAllDudes = function() {
+			dudes = []
+			if (supports_html5_storage()) {
+				localStorage["dudes"] = JSON.stringify(dudes);
+			}
+			currentDude = buildNullDude(seed);
+			displayDude(currentDude);
+			refreshDudeList();
+		}
+
+		$(document)
+				.ready(
+						function() {
+							seed = Date.now()
+
+							$('.power')
+									.each(
+											function(index, element) {
+												var ddd = $("<select>")
+												jQuery
+														.each(
+																levels,
+																function(index,
+																		value) {
+																	if (index === 0) {
+																		ddd
+																				.append("<option value="+ index + ">"
+																						+ value
+																						+ "</option>");
+																	} else {
+																		ddd
+																				.append("<option value="+index+">"
+																						+ value
+																						+ " ("
+																						+ (index)
+																						+ ")</option>");
+																	}
+																});
+												$(element).append(ddd);
+												$(element)
+														.change(
+																function() {
+																	var i = element.id;
+																	var d = $(
+																			ddd)
+																			.val();
+																	if (i
+																			.indexOf("powerLevel") == -1) {
+																		currentDude[i] = parseInt(d);
+																		calcDudeValue(currentDude);
+																		displayDude(currentDude);
+																	} else {
+																		var l = parseInt(i
+																				.replace(
+																						"powerLevel",
+																						""));
+																		currentDude.powers[l].level = parseInt(d);
+																		calcDudeValue(currentDude);
+																		displayDude(currentDude);
+																	}
+																});
+											});
+							$('.powerSelector')
+									.each(
+											function(index, element) {
+												var ddd = $("<select>")
+												jQuery
+														.each(
+																allPowers,
+																function(index,
+																		value) {
+																	ddd
+																			.append("<option>"
+																					+ value
+																					+ "</option>");
+																});
+												$(element).append(ddd);
+												$(element)
+														.change(
+																function() {
+																	var i = element.id;
+																	var d = $(
+																			ddd)
+																			.val();
+																	var l = parseInt(i
+																			.replace(
+																					"power",
+																					""));
+																	currentDude.powers[l].power = d;
+																	calcDudeValue(currentDude);
+																	displayDude(currentDude);
+																});
+
+											});
+							$('.specSelector').each(
+									function(index, element) {
+										var ddd = $("<select>")
+										jQuery.each(allSpecialties, function(
+												index, value) {
+											ddd.append("<option>" + value
+													+ "</option>");
+										});
+										$(element).append(ddd);
+										$(element).change(
+												function() {
+													var i = element.id;
+													var d = $(ddd).val();
+													var l = parseInt(i.replace(
+															"spec", ""));
+													currentDude.specs[l] = d;
+													calcDudeValue(currentDude);
+													displayDude(currentDude);
+												});
+									});
+
+							$("#charId").change(function(data) {
+								currentDude.name = $(this).val();
+							});
+
+							$("#charImg").change(function(data) {
+								currentDude.img = $(this).val();
+								$("#char_img").attr("src", $(this).val());
+							});
+
+							$("#originDescription").change(function(data) {
+								currentDude.description = $(this).val();
+							});
+
+							$("#quality1").change(function(data) {
+								currentDude.quality1 = $(this).val();
+							});
+							$("#quality2").change(function(data) {
+								currentDude.quality2 = $(this).val();
+							});
+							$("#quality3").change(function(data) {
+								currentDude.quality3 = $(this).val();
+							});
+
+							currentDude = buildDude(seed);
+							displayDude(currentDude);
+
+							if (supports_html5_storage()) {
+
+								var dudeString = localStorage["dudes"];
+
+								if ($.isEmptyObject(dudeString)) {
+									dudes = [];
+								} else {
+									dudes = JSON.parse(dudeString);
+									refreshDudeList();
+								}
+							}
+						})
+	</script>
 
 
 
@@ -789,71 +887,233 @@ option.hover {
 
 
 
-<div class='nonprintable'>
-	<h3>Character Generator...</h3>
-	<p>No Frills Character Generator for Icons Assembled RPG.
-	<h4>Features</h4>
-	<ul>  
-	<li>Randomly Generates characters as described in the Icons Assembled RPG Book (chapter 2)
-	<li>Supports the Points Buy Generation method described in the Icons Assembled RPG Book (pg68)
-	<li>Saves characters in browser via html5 storage (when supported by browser)
-	<li>Prints a no frills character sheet with plenty of space to calculate stamina, draw character portaits, and take notes
-	</ul>  
-	<P>
-		Generate a Random Character based on point level <select id="limit">
-			<option value="0">Unlimited</option>
-			<option value="30">30</option>
-			<option value="35">35</option>
-			<option value="40">40</option>
-			<option value="45">45</option>
-			<option value="50">50</option>
-			<option value="55">55</option>
-			<option value="60">60</option>
-		</select>
-		<button onclick="generate()">Generate!</button>
-	<P>
-		Create a new character (for use with the Point-Based Hero Creation)
-		<button onclick="createNew();">Create New</button>
-	<P>
-		Save the current character to The Sidebar
-		<button onclick="saveDude(currentDude);">Save</button>
-	<P>
-		Delete a character from The Sidebar
-		<button onclick="deleteDude(currentDude);">Delete</button>
-	<P>
-		Delete all characters from The Sidebar
-		<button onclick="deleteAllDudes();">Delete ALL</button>
-	<P>
-		Print a No-frills Character Sheet
-		<button onclick="printDude(currentDude)"
-			value="print a div!">Print!</button>
-	<hr>
-	<table style="height: 600px;">
-		<tr>
-			<th>Sidebar</th>
-			<th>Character</th>
-		</tr>
-		<tr>
-			<td width=150 valign=top><select
-				style="width: 20em; height: 600px;" id='history' multiple></select></td>
-			<td valign=top>
-				<div>
+	<div class='nonprintable'>
+		<h3>Character Generator...</h3>
+		<p>No Frills Character Generator for Icons Assembled RPG.
+		<h4>Features</h4>
+		<ul>
+			<li>Randomly Generates characters as described in the Icons
+				Assembled RPG Book (chapter 2)
+			<li>Supports the Points Buy Generation method described in the
+				Icons Assembled RPG Book (pg68)
+			<li>Saves characters in browser via html5 storage (when
+				supported by browser)
+			<li>Prints a no frills character sheet with plenty of space to
+				calculate stamina, draw character portaits, and take notes
+		</ul>
+		<P>
+			Generate a Random Character based on point level <select id="limit">
+				<option value="0">Unlimited</option>
+				<option value="30">30</option>
+				<option value="35">35</option>
+				<option value="40">40</option>
+				<option value="45">45</option>
+				<option value="50">50</option>
+				<option value="55">55</option>
+				<option value="60">60</option>
+			</select>
+			<button onclick="generate()">Generate!</button>
+		<P>
+			Create a new character (for use with the Point-Based Hero Creation)
+			<button onclick="createNew();">Create New</button>
+		<P>
+			Save the current character to The Sidebar
+			<button onclick="saveDude(currentDude);">Save</button>
+		<P>
+			Delete a character from The Sidebar
+			<button onclick="deleteDude(currentDude);">Delete</button>
+		<P>
+			Delete all characters from The Sidebar
+			<button onclick="deleteAllDudes();">Delete ALL</button>
+		<P>
+			Create a No-frills Character Sheet suitable for printing (opens a new window)
+			<button onclick="printDude(currentDude)" value="print a div!">Printable Sheet!</button>
+		<hr>
+		<table style="height: 600px;">
+			<tr>
+				<th>Sidebar</th>
+				<th>Character</th>
+			</tr>
+			<tr>
+				<td width=150 valign=top><select
+					style="width: 20em; height: 600px;" id='history' multiple></select></td>
+				<td valign=top>
+					<div>
+						<table width=320>
+							<tr>
+								<th width=150>Identification</th>
+								<th width=100>&nbsp;</th>
+							</tr>
+							<tr>
+								<td>Name</td>
+								<td><input id="charId" type="text" style="width: 15em;"></input</td>
+							</tr>
+							<tr>
+								<td>Profile Pic URL</td>
+								<td><input id="charImg" type="text" style="width: 15em;"></input</td>
+							</tr>
+							<tr>
+								<td>Points</td>
+								<td id="level"></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Origin</th>
+							</tr>
+							<tr>
+								<td colspan=2 id="origin"></td>
+							</tr>
+							<tr>
+								<td colspan=2><textarea id="originDescription"
+										name="textarea" rows="10" cols="46"></textarea></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Attributes (<span id='attributeValue'></span>)
+								</th>
+							</tr>
+							<tr>
+								<td>Prowess</td>
+								<td id="prowess" class="power"></td>
+							</tr>
+							<tr>
+								<td>Coordination</td>
+								<td id="coordination" class="power"></td>
+							</tr>
+							<tr>
+								<td>Strength</td>
+								<td id="strength" class="power"></td>
+							</tr>
+							<tr>
+								<td>Intellect</td>
+								<td id="intellect" class="power"></td>
+							</tr>
+							<tr>
+								<td>Awareness</td>
+								<td id="awareness" class="power"></td>
+							</tr>
+							<tr>
+								<td>Willpower</td>
+								<td id="willpower" class="power"></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Powers (<span id='powerValue'></span>)
+								</th>
+							</tr>
+							<tr>
+								<td id="power0" class="powerSelector"></td>
+								<td id="powerLevel0" class="power"></td>
+							</tr>
+							<tr>
+								<td id="power1" class="powerSelector"></td>
+								<td id="powerLevel1" class="power"></td>
+							</tr>
+							<tr>
+								<td id="power2" class="powerSelector"></td>
+								<td id="powerLevel2" class="power"></td>
+							</tr>
+							<tr>
+								<td id="power3" class="powerSelector"></td>
+								<td id="powerLevel3" class="power"></td>
+							</tr>
+							<tr>
+								<td id="power4" class="powerSelector"></td>
+								<td id="powerLevel4" class="power"></td>
+							</tr>
+							<tr>
+								<td id="power5" class="powerSelector"></td>
+								<td id="powerLevel5" class="power"></td>
+							</tr>
+							<tr>
+								<td id="power6" class="powerSelector"></td>
+								<td id="powerLevel6" class="power"></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Specialties (<span id='specValue'></span>)
+								</th>
+							<tr>
+								<td id="spec0" class="specSelector"></td>
+							</tr>
+							<tr>
+								<td id="spec1" class="specSelector"></td>
+							</tr>
+							<tr>
+								<td id="spec2" class="specSelector"></td>
+							</tr>
+							<tr>
+								<td id="spec3" class="specSelector"></td>
+							</tr>
+							<tr>
+								<td id="spec4" class="specSelector"></td>
+							</tr>
+							<tr>
+								<td id="spec5" class="specSelector"></td>
+							</tr>
+							<tr>
+								<td id="spec6" class="specSelector"></td>
+							</tr>
+							<tr>
+								<td id="spec7" class="specSelector"></td>
+							</tr>
+							<tr>
+								<td id="spec8" class="specSelector"></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan=2 id="origin">Qualities</td>
+							</tr>
+							<tr>
+								<td colspan=2><textarea id="quality1" name="textarea"
+										rows="2" cols="46"></textarea></td>
+							</tr>
+							<tr>
+								<td colspan=2><textarea id="quality2" name="textarea"
+										rows="2" cols="46"></textarea></td>
+							</tr>
+							<tr>
+								<td colspan=2><textarea id="quality3" name="textarea"
+										rows="2" cols="46"></textarea></td>
+							</tr>
+						</table>
+					</div>
+				</td>
+				<td valign=top>
+					<div>
+						<img id="char_img" width=320 />
+					</div>
+				</td>
+			</tr>
+		</table>
+		<div id='log'></div>
+	</div>
+	<div id="print-template" style="display: none">
+	<div class="printable">
+		<table>
+			<tr>
+				<td>
 					<table width=320>
 						<tr>
-							<th width=150>Identification</th>
-							<th width=100>&nbsp;</th>
+							<th colspan=2>Identification</th>
 						</tr>
 						<tr>
-							<td>Name</td>
-							<td><input id="charId" type="text" style="width: 15em;"></input</td>
-						</tr>
-						<tr>
-							<td>Profile Pic URL</td>
-							<td><input id="charImg" type="text" style="width: 15em;"></input</td>
+							<td>ID</td>
+							<td id="print_seed"></td>
 						</tr>
 						<tr>
 							<td>Points</td>
-							<td id="level"></td>
+							<td id="print_level"></td>
 						</tr>
 						<tr>
 							<td colspan=2>&nbsp;</td>
@@ -862,236 +1122,128 @@ option.hover {
 							<th colspan=2>Origin</th>
 						</tr>
 						<tr>
-							<td colspan=2 id="origin"></td>
+							<td colspan=2 id="print_origin"></td>
 						</tr>
 						<tr>
-							<td colspan=2><textarea id="originDescription" name="textarea" rows="10" cols="46"></textarea></td>
+							<td colspan=2 id="print_originDescription"></td>
 						</tr>
 						<tr>
 							<td colspan=2>&nbsp;</td>
 						</tr>
 						<tr>
-							<th colspan=2>Attributes (<span id='attributeValue'></span>)
+							<th colspan=2>Qualities</th>
+						</tr>
+						<tr>
+							<td colspan=2>
+								<ol style="padding-left: 20">
+									<li id="print_quality1"></li>
+									<li id="print_quality2"></li>
+									<li id="print_quality3"></li>
+								</ol>
+							</td>
+						</tr>
+						<tr>
+							<td colspan=2>&nbsp;</td>
+						</tr>
+						<tr>
+							<th colspan=2>Attributes (<span id='print_attributeValue'></span>)
 							</th>
 						</tr>
 						<tr>
 							<td>Prowess</td>
-							<td id="prowess" class="power"></td>
+							<td id="print_prowess"></td>
 						</tr>
 						<tr>
 							<td>Coordination</td>
-							<td id="coordination" class="power"></td>
+							<td id="print_coordination"></td>
 						</tr>
 						<tr>
 							<td>Strength</td>
-							<td id="strength" class="power"></td>
+							<td id="print_strength"></td>
 						</tr>
 						<tr>
 							<td>Intellect</td>
-							<td id="intellect" class="power"></td>
+							<td id="print_intellect"></td>
 						</tr>
 						<tr>
 							<td>Awareness</td>
-							<td id="awareness" class="power"></td>
+							<td id="print_awareness"></td>
 						</tr>
 						<tr>
 							<td>Willpower</td>
-							<td id="willpower" class="power"></td>
+							<td id="print_willpower"></td>
 						</tr>
 						<tr>
 							<td colspan=2>&nbsp;</td>
 						</tr>
 						<tr>
-							<th colspan=2>Powers (<span id='powerValue'></span>)
-							</th>
-						</tr>
-						<tr>
-							<td id="power0" class="powerSelector"></td>
-							<td id="powerLevel0" class="power"></td>
-						</tr>
-						<tr>
-							<td id="power1" class="powerSelector"></td>
-							<td id="powerLevel1" class="power"></td>
-						</tr>
-						<tr>
-							<td id="power2" class="powerSelector"></td>
-							<td id="powerLevel2" class="power"></td>
-						</tr>
-						<tr>
-							<td id="power3" class="powerSelector"></td>
-							<td id="powerLevel3" class="power"></td>
-						</tr>
-						<tr>
-							<td id="power4" class="powerSelector"></td>
-							<td id="powerLevel4" class="power"></td>
-						</tr>
-						<tr>
-							<td id="power5" class="powerSelector"></td>
-							<td id="powerLevel5" class="power"></td>
-						</tr>
-						<tr>
-							<td id="power6" class="powerSelector"></td>
-							<td id="powerLevel6" class="power"></td>
+							<td>Stamina</td>
+							<td id="print_stamina"></td>
 						</tr>
 						<tr>
 							<td colspan=2>&nbsp;</td>
 						</tr>
 						<tr>
-							<th colspan=2>Specialties (<span id='specValue'></span>)
+							<th colspan=2>Powers (<span id='print_powerValue'></span>)
+							</th>
+						</tr>
+						<tr>
+							<td id="print_power0"></td>
+							<td id="print_powerLevel0"></td>
+						</tr>
+						<tr>
+							<td id="print_power1"></td>
+							<td id="print_powerLevel1"></td>
+						</tr>
+						<tr>
+							<td id="print_power2"></td>
+							<td id="print_powerLevel2"></td>
+						</tr>
+						<tr>
+							<td id="print_power3"></td>
+							<td id="print_powerLevel3"></td>
+						</tr>
+						<tr>
+							<td id="print_power4"></td>
+							<td id="print_powerLevel4"></td>
+						</tr>
+						<tr>
+							<td id="print_power5"></td>
+							<td id="print_powerLevel5"></td>
+						</tr>
+						<tr>
+							<td id="print_power6"></td>
+							<td id="print_powerLevel6"></td>
+						</tr>
+						<tr>
+							<td id="print_power7"></td>
+							<td id="print_powerLevel7"></td>
+						</tr>
+						<tr>
+							<td id="print_power8"></td>
+							<td id="print_powerLevel8"></td>
+						</tr>
+						<tr>
+							<td colspan=2>&nbsp;</td>
+						</tr>
+						<tr>
+							<th colspan=2>Specialties (<span id='print_specValue'></span>)
+							</th>
 							</th>
 						<tr>
-							<td id="spec0" class="specSelector"></td>
-						</tr>
-						<tr>
-							<td id="spec1" class="specSelector"></td>
-						</tr>
-						<tr>
-							<td id="spec2" class="specSelector"></td>
-						</tr>
-						<tr>
-							<td id="spec3" class="specSelector"></td>
-						</tr>
-						<tr>
-							<td id="spec4" class="specSelector"></td>
-						</tr>
-						<tr>
-							<td id="spec5" class="specSelector"></td>
-						</tr>
-						<tr>
-							<td id="spec6" class="specSelector"></td>
-						</tr>
-						<tr>
-							<td id="spec7" class="specSelector"></td>
-						</tr>
-						<tr>
-							<td id="spec8" class="specSelector"></td>
+							<td colspan=2 id="print_specialties"></td>
 						</tr>
 					</table>
-				</div>
-			</td>
-			<td valign=top>
-	<div><img id="char_img" width=320/></div>
-	</td>
-		</tr>
-	</table>
-	<div id='log'></div>
-</div>
-<div class="printable" style="display: none">
-
-<table><tr><td>
-	<table width=320>
-		<tr>
-			<th colspan=2>Identification</th>
-		</tr>
-		<tr>
-			<td>ID</td>
-			<td id="print_seed"></td>
-		</tr>
-		<tr>
-			<td>Points</td>
-			<td id="print_level"></td>
-		</tr>
-		<tr>
-			<td colspan=2>&nbsp;</td>
-		</tr>
-		<tr>
-			<th colspan=2>Origin</th>
-		</tr>
-		<tr>
-			<td colspan=2 id="print_origin"></td>
-		</tr>
-		<tr>
-			<td colspan=2 id="print_originDescription"></td>
-		</tr>
-		<tr>
-			<td colspan=2>&nbsp;</td>
-		</tr>
-		<tr>
-			<th colspan=2>Attributes (<span id='print_attributeValue'></span>)
-			</th>
-		</tr>
-		<tr>
-			<td>Prowess</td>
-			<td id="print_prowess"></td>
-		</tr>
-		<tr>
-			<td>Coordination</td>
-			<td id="print_coordination"></td>
-		</tr>
-		<tr>
-			<td>Strength</td>
-			<td id="print_strength"></td>
-		</tr>
-		<tr>
-			<td>Intellect</td>
-			<td id="print_intellect"></td>
-		</tr>
-		<tr>
-			<td>Awareness</td>
-			<td id="print_awareness"></td>
-		</tr>
-		<tr>
-			<td>Willpower</td>
-			<td id="print_willpower"></td>
-		</tr>
-		<tr>
-			<td colspan=2>&nbsp;</td>
-		</tr>
-		<tr>
-			<th colspan=2>Powers (<span id='print_powerValue'></span>)
-			</th>
-		</tr>
-		<tr>
-			<td id="print_power0"></td>
-			<td id="print_powerLevel0"></td>
-		</tr>
-		<tr>
-			<td id="print_power1"></td>
-			<td id="print_powerLevel1"></td>
-		</tr>
-		<tr>
-			<td id="print_power2"></td>
-			<td id="print_powerLevel2"></td>
-		</tr>
-		<tr>
-			<td id="print_power3"></td>
-			<td id="print_powerLevel3"></td>
-		</tr>
-		<tr>
-			<td id="print_power4"></td>
-			<td id="print_powerLevel4"></td>
-		</tr>
-		<tr>
-			<td id="print_power5"></td>
-			<td id="print_powerLevel5"></td>
-		</tr>
-		<tr>
-			<td id="print_power6"></td>
-			<td id="print_powerLevel6"></td>
-		</tr>
-		<tr>
-			<td id="print_power7"></td>
-			<td id="print_powerLevel7"></td>
-		</tr>
-		<tr>
-			<td id="print_power8"></td>
-			<td id="print_powerLevel8"></td>
-		</tr>
-		<tr>
-			<td colspan=2>&nbsp;</td>
-		</tr>
-		<tr>
-			<th colspan=2>Specialties (<span id='print_specValue'></span>)
-			</th>
-			</th>
-		<tr>
-			<td colspan=2 id="print_specialties"></td>
-		</tr>
-	</table>
-	</td><td valign=top>
-	<div><img id="print_img" width=320/></div>
-	</td></tr></table>
+				</td>
+				<td valign=top>
+					<div>
+						<img id="print_img" width=320 />
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
 </div>
 
-
-</body></html>
+</body>
+</html>
