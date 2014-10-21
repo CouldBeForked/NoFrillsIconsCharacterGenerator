@@ -1,5 +1,4 @@
 <html>
-
 <head>
     <title>ICONS Character Generator</title>
     <style>
@@ -12,10 +11,11 @@
 
 <body>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-    <!-- <script src="jquery.min.js"></script> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script> -->
+    <script src="jquery.min.js"></script>
 
     <script>
+    /**
         (function(i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
             i[r] = i[r] || function() {
@@ -30,6 +30,7 @@
 
         ga('create', 'UA-1395087-6', 'auto');
         ga('send', 'pageview');
+        */
     </script>
 
     <script>
@@ -54,6 +55,19 @@
             return a;
         };
 
+		String.prototype.format = String.prototype.f = function() {
+			var s = this, i = arguments.length;
+
+			while (i--) {
+				s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'),
+								arguments[i]);
+			}
+			return s;
+		};
+
+
+
+
         var printOldDude = function(dude) {
             prepDudePrintout(dude);
             $('.nonprintable').css('display', 'none');
@@ -63,7 +77,7 @@
             $('#print-template').css('display', 'none');
             $('.nonprintable').css('display', 'block');
             document.title = 'ICONS Character Generator';
-        }
+        };
 
         var printDude = function(dude) {
             prepDudePrintout(dude);
@@ -71,7 +85,7 @@
             var h = $('.printable').html();
             wnd.document.title = dude.name;
             wnd.document.writeln(h);
-        }
+        };
 
         var prepDudePrintout = function(dude) {
 
@@ -113,7 +127,7 @@
                 $("#print_img").attr("src", dude.img);
             }
             seed = Date.now();
-        }
+        };
 
         var dudes = [];
         var currentDude = {};
@@ -307,7 +321,7 @@
                     return offensivePowers[6 + r2 - 1];
             }
             return "NO POWER";
-        }
+        };
 
         var sensory = function(r1, r2) {
             switch (r1) {
@@ -321,7 +335,7 @@
                     return sensoryPowers[6 + r2 - 1];
             }
             return "NO POWER";
-        }
+        };
 
         var levelScore = function(r) {
             switch (r) {
@@ -358,7 +372,7 @@
             } else {
                 return "" + levels[l] + " (" + l + ")";
             }
-        }
+        };
 
         var randomOrigin = function() {
             switch (roll() + roll()) {
@@ -380,7 +394,7 @@
                 case 12:
                     return origins[6];
             }
-        }
+        };
 
         var randomNumPow = function() {
             var r = roll() + roll();
@@ -446,7 +460,7 @@
                 case 12:
                     return 4;
             };
-        }
+        };
 
         var randomNumSpec = function() {
             var l = numSpec(roll() + roll());
@@ -456,7 +470,7 @@
         var randomSpec = function() {
             var l = ((roll() - 1) * 6) + (roll() - 1);
             return specialties[l + 1];
-        }
+        };
 
         var calcDudeValue = function(dude) {
             dude.attributeValue = dude.prowess + dude.coordination + dude.strength + dude.intellect + dude.awareness + dude.willpower;
@@ -471,11 +485,11 @@
                 }
             });
             dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
-        }
+        };
 
         var calcStamina = function(dude) {
             return dude.strength + dude.willpower;
-        }
+        };
 
         var buildNullDude = function(seed) {
             var dude = {};
@@ -495,13 +509,6 @@
             dude.quality2 = "";
             dude.quality3 = "";
             dude.powers = [];
-
-            for (var x = 0; x < 7; x++) {
-                var p = {};
-                p.power = "";
-                p.level = 0;
-                dude.powers.push(p);
-            };
             dude.specs = [];
             var ns = 0;
 
@@ -536,14 +543,11 @@
                 var p = {};
                 p.power = randomPower();
                 p.level = randomLevel();
+                p.extras = [];
+                p.limitations = [];
+                p.notes = [];
                 dude.powers.push(p);
             };
-            for (var x = np; x < 7; x++) {
-                var p = {};
-                p.power = "";
-                p.level = 0;
-                dude.powers.push(p);
-            }
             dude.specs = [];
             var ns = randomNumSpec();
             for (var x = 0; x < ns; x++) {
@@ -555,6 +559,40 @@
             seed = Date.now();
             return dude;
         };
+	
+        
+        
+        // add the row to the table
+		var rowTemplate = '<table><tr>';
+		rowTemplate += '<td class="powerSelector"></td>';
+		rowTemplate += '<td class="powerLevel"></td>';
+		rowTemplate += '<td><button class="powerDelete">-</button>';
+		rowTemplate += '<button class="addExtra">E+</button>';
+		rowTemplate += '<button class="addLimitation">L+</button>';
+		rowTemplate += '<button class="addNote">N+</button></td>';
+		rowTemplate += '</tr><tr><td colspan=5><table class="modifiers"></table></td>';
+		rowTemplate += '</tr></table>';
+
+		var extraTemplate = '<tr>';
+		extraTemplate += '<td>&nbsp;</td>';
+		extraTemplate += '<td><button class="extraDelete">-</button></td>';
+		extraTemplate += '<td>Extra:</td>';
+		extraTemplate += '<td class="extraSelector"></td>';
+		extraTemplate += '</tr>';
+
+		var limitationTemplate = '<tr>';
+		limitationTemplate += '<td>&nbsp;</td>';
+		limitationTemplate += '<td><button class="limitationDelete">-</button></td>';
+		limitationTemplate += '<td>Limitation:</td>';
+		limitationTemplate += '<td class="limitationSelector"></td>';
+		limitationTemplate += '</tr>';
+
+		var noteTemplate = '<tr>';
+		noteTemplate += '<td>&nbsp;</td>';
+		noteTemplate += '<td><button class="noteDelete">-</button></td>';
+		noteTemplate += '<td>Note:</td>';
+		noteTemplate += '<td class="noteText"></td>';
+		noteTemplate += '</tr>';
 
         var displayDude = function(dude) {
 
@@ -562,7 +600,7 @@
             $("#origin").text(dude.origin);
 
             if ($.isEmptyObject(dude.description)) {
-                dude.description = ""
+                dude.description = "";
             }
             $("#originDescription").text(dude.description);
 
@@ -578,14 +616,14 @@
             $("#willpower>select").val(dude.willpower);
 
             $("#powerValue").text(dude.powerValue);
+            
+            // delete all powers first
+            
+           	$('#powerTable').empty();
             var np = dude.powers.length;
+            var tmpPowers = dude.powers;
             for (var x = 0; x < np; x++) {
-                $("#power" + x + ">select").val(dude.powers[x].power);
-                $("#powerLevel" + x + ">select").val(dude.powers[x].level);
-            };
-            for (var x = np; x < 7; x++) {
-                $("#power" + x + ">select").val("");
-                $("#powerLevel" + x + ">select").val(0);
+    			displayPower(currentDude, dude.powers[x]);
             };
 
             var ns = dude.specs.length;
@@ -612,7 +650,7 @@
                 $("#char_img").attr("src", dude.img);
             }
 
-        }
+        };
 
         var generate = function() {
             var pointLimit = 0;
@@ -625,14 +663,14 @@
             currentDude = dude;
 
             seed = Date.now();
-        }
+        };
 
         var createNew = function() {
             var dude = buildNullDude(seed);
             displayDude(dude);
             currentDude = dude;
             seed = Date.now();
-        }
+        };
 
         var appendLog = function(d) {
             var s = d.name;
@@ -646,15 +684,15 @@
             });
 
             entry.hover(function() {
-                entry.addClass("hover")
+                entry.addClass("hover");
             }, function() {
-                entry.removeClass("hover")
+                entry.removeClass("hover");
             });
-        }
+        };
 
         var debug = function(l) {
             var log = $('#log').append("<div>" + l + "</div");
-        }
+        };
 
         var refreshDudeList = function() {
             $("#history").empty();
@@ -669,12 +707,12 @@
                 });
 
                 entry.hover(function() {
-                    entry.addClass("hover")
+                    entry.addClass("hover");
                 }, function() {
-                    entry.removeClass("hover")
+                    entry.removeClass("hover");
                 });
             });
-        }
+        };
 
         var saveDude = function(dude) {
             var foundIt = false;
@@ -699,7 +737,7 @@
                 localStorage["dudes"] = JSON.stringify(dudes);
             }
             refreshDudeList();
-        }
+        };
 
         var deleteDude = function(dude) {
             dudes = dudes.filter(function(e) {
@@ -711,22 +749,22 @@
             refreshDudeList();
             currentDude = buildNullDude(seed);
             displayDude(currentDude);
-        }
+        };
 
         var deleteAllDudes = function() {
-            dudes = []
+            dudes = [];
             if (supports_html5_storage()) {
                 localStorage["dudes"] = JSON.stringify(dudes);
             }
             currentDude = buildNullDude(seed);
             displayDude(currentDude);
             refreshDudeList();
-        }
+        };
 
         $(document).ready(function() {
-            seed = Date.now()
+            seed = Date.now();
             $('.power').each(function(index, element) {
-                var ddd = $("<select>")
+                var ddd = $("<select>");
                 jQuery.each(levels, function(index, value) {
                     if (index === 0) {
                         ddd
@@ -758,15 +796,10 @@
                     }
                 });
             });
-            $('.powerSelector')
-                .each(
+            $('.powerSelector').each(
                     function(index, element) {
-                        var ddd = $("<select>")
-                        jQuery
-                            .each(
-                                allPowers,
-                                function(index,
-                                    value) {
+                        var ddd = $("<select>");
+                        jQuery.each(allPowers,function(index, value) {
                                     ddd
                                         .append("<option>" + value + "</option>");
                                 });
@@ -790,7 +823,7 @@
                     });
             $('.specSelector').each(
                 function(index, element) {
-                    var ddd = $("<select>")
+                    var ddd = $("<select>");
                     jQuery.each(allSpecialties, function(
                         index, value) {
                         ddd.append("<option>" + value + "</option>");
@@ -830,6 +863,17 @@
             $("#quality3").change(function(data) {
                 currentDude.quality3 = $(this).val();
             });
+    		$('#addPower').click(function() {
+    			var qqq = {};
+    			qqq.power = '';
+    			qqq.level = 0;
+    			qqq.extras = [];
+    			qqq.limitations = [];
+    			qqq.notes = [];
+    			addPower(currentDude, qqq);
+    			displayPower(currentDude, qqq);
+    		});
+
 
             currentDude = buildDude(seed);
             displayDude(currentDude);
@@ -841,11 +885,271 @@
                 if ($.isEmptyObject(dudeString)) {
                     dudes = [];
                 } else {
-                    dudes = JSON.parse(dudeString);
+                    tempDudes = JSON.parse(dudeString);
+                    jQuery.each(tempDudes, function(index, d) {
+	                    jQuery.each(d.powers, function(index, p) {
+	                   		if (jQuery.isEmptyObject(p.extras)) {
+	                   			p.extras = [];
+		                    }
+	                   		if (jQuery.isEmptyObject(p.limitations)) {
+	                   			p.limitations = [];
+		                    }
+	                   		if (jQuery.isEmptyObject(p.notes)) {
+	                   			p.notes = [];
+		                    }
+	                    });
+	                    dudes.push(d);
+					});
+
                     refreshDudeList();
                 }
             }
-        })
+        });
+        
+  		var addPower = function(dude, pow) {
+
+			var power = {};
+			if ($.isEmptyObject(pow)) {
+				power.power = "";
+				power.level = 0;
+				power.extras = [];
+				power.limitations = [];
+				power.notes = [];
+			} else {
+				power = pow;
+			}
+			
+			// add the power to the dude
+			dude.powers.push(power);
+		};
+		        
+
+  		var displayPower = function(dude, power) {
+
+			// adds an extra to the power
+			var addExtra = function(eee) {
+				var extra = eee;
+				if ($.isEmptyObject(eee)) {
+					extra = "";
+				}
+				// add a row to the table 
+				var extraRow = extraTemplate;
+				var ddd = $("<select>");
+				jQuery.each(standardExtras, function(index, value) {
+					ddd.append("<option>" + value + "</option>");
+				});
+
+				var extraRow = $(extraRow).find('.extraSelector').append(ddd)
+						.end();
+
+				$(row).find('.modifiers').append(extraRow).end();
+
+				// initialize the power value (if it is provided)
+				$(extraRow).find('td.extraSelector>select').val(extra);
+
+				// handle change event
+				$(extraRow).find(".extraSelector>select").change(function() {
+					//debug('Change Extra Before {0}'.f(extra));
+					var before = extra;
+					extra = $(this).val();
+					power.extras = $.grep(power.extras, function(v) {
+						return v != before;
+					});
+					power.extras.push(extra);
+					//debug('Change Extra After {0}'.f(extra));
+				});
+
+				// handle delete event
+				$(extraRow).find(".extraDelete").click(function() {
+					//debug('Delete Extra');
+					power.extras = $.grep(power.extras, function(v) {
+						return v != extra;
+					});
+					$(extraRow).remove();
+				});
+			}; // end of addExtra
+
+			// adds a limitation ot the table
+			var addLimitation = function(eee) {
+				var limitation = eee;
+				if ($.isEmptyObject(eee)) {
+					limitation = "";
+				}
+				var limitationRow = limitationTemplate;
+
+				// add a row to the table 
+				var ddd = $("<select>");
+				jQuery.each(standardLimitations, function(index, value) {
+					ddd.append("<option>" + value + "</option>");
+				});
+
+				var limitationRow = $(limitationRow)
+						.find('.limitationSelector').append(ddd).end();
+				// initialize the power value (if it is provided)
+				$(limitationRow).find('td.limitationSelector>select').val(
+						limitation);
+
+				$(row).find('.modifiers').append(limitationRow).end();
+
+				// handle change event
+				$(limitationRow).find(".limitationSelector>select")
+						.change(
+								function() {
+									//debug('Change limitation Before {0}'.f(limitation));
+									var before = limitation;
+									limitation = $(this).val();
+									power.limitations = $.grep(
+											power.limitations, function(v) {
+												return v != before;
+											});
+									power.limitations.push(limitation);
+									//debug('Change limitation After {0}'.f(limitation));
+								});
+
+				// handle delete event
+				$(limitationRow).find(".limitationDelete").click(function() {
+					//debug('Delete limitation');
+					power.limitations = $.grep(power.limitations, function(v) {
+						return v != limitation;
+					});
+					$(limitationRow).remove();
+				});
+			}; // end of addLimitation()
+
+
+			// adds a limitation to the table
+			var addNote = function(eee) {
+				var note = eee;
+				if ($.isEmptyObject(eee)) {
+					note = "";
+				}
+				var noteRow = noteTemplate;
+
+				// add a row to the table 
+				var ddd = $("<input></input");
+				var noteRow = $(noteRow).find('.noteText').append(ddd).end();
+				// initialize the power value (if it is provided)
+				$(noteRow).find('td.noteText>input').val(note);
+				$(noteRow).find('td.noteText>input').data("old", note);
+
+				$(row).find('.modifiers').append(noteRow).end();
+
+				// handle change event
+				$(noteRow).find(".noteText>input").change(function(eee) {
+					////debug('Change note Before {0}'.f(note));
+					
+					note = $(this).val();
+					var before = $(noteRow).find('td.noteText>input').data("old");
+					
+					// remove the old note
+					 power.notes = $.grep(power.notes, function(v) {
+						 return v != before;
+					 });
+
+					$(noteRow).find('td.noteText>input').data("old", note);
+					power.notes.push(note);
+					// //debug('Change note After {0}'.f(note));
+				});
+
+				// handle delete event
+				$(noteRow).find(".noteDelete").click(function() {
+					////debug('Delete note');
+					power.notes = $.grep(power.notes, function(v) {
+						return v != note;
+					});
+					$(noteRow).remove();
+				});
+			}; // end of addnote()
+
+
+
+			var row = rowTemplate;
+
+			//append the list of powers
+			var ddd = $("<select>");
+			jQuery.each(allPowers, function(index, value) {
+				ddd.append("<option>" + value + "</option>");
+			});
+			row = $(row).find('.powerSelector').append(ddd).end();
+
+			// append the list of power levels			
+			ddd = $("<select>");
+			jQuery.each(levels, function(index, value) {
+				if (index === 0) {
+					ddd.append("<option value="+ index + ">" + value
+							+ "</option>");
+				} else {
+					ddd.append("<option value="+index+">" + value + " ("
+							+ (index) + ")</option>");
+				}
+			});
+			row = $(row).find('.powerLevel').append(ddd).end();
+
+			// initialize the power value
+			$(row).find('td.powerSelector>select').val(power.power);
+			$(row).find('td.powerLevel>select').val(power.level);
+			$.each(power.extras, function(i, v) {
+				addExtra(v);
+			});
+
+			$.each(power.limitations, function(i, v) {
+				addLimitation(v);
+			});
+
+			$.each(power.notes, function(i, v) {
+				addNote(v);
+			});
+
+			// add the completed row
+			row.appendTo('#powerTable');
+
+			// power select box changed 
+			$(row).find('.powerSelector>select').change(function(e) {
+				var before = power.power;
+				power.power = $(this).val();
+			});
+
+			// power level select box changed
+			$(row).find('.powerLevel>select').change(function(e) {
+				var before = power.level;
+				power.level = $(this).val();
+			});
+
+			// delete power clicked
+			$(row).find('.powerDelete').click(function() {
+				dude.powers = $.grep(dude.powers, function(v) {
+					return v != power;
+				});
+				$(row).remove();
+			});
+
+			// add extra clicked
+			$(row).find('.addExtra').click(function() {
+				power.extras.push("");
+				addExtra("");
+			});
+
+			// add limitation clicked
+			$(row).find('.addLimitation').click(function() {
+				////debug('Add a limitation');
+				power.limitations.push("");
+				addLimitation("");
+			});
+
+			// add note clicked
+			$(row).find('.addNote').click(function() {
+				//debug('Add a note');
+				power.notes.push("");
+				addNote("");
+			});
+
+		}; // end of displayPower()
+
+		$('#printDude').click(function() {
+			printDude(currentDude);
+		});
+		
+
     </script>
 
 
@@ -857,10 +1161,10 @@
         <p>No Frills Character Generator for Icons Assembled RPG.
             <h4>Features</h4>
             <ul>
-                <li>Randomly Generates characters as described in the Icons Assembled RPG Book (chapter 2)
-                    <li>Supports the Points Buy Generation method described in the Icons Assembled RPG Book (pg68)
-                        <li>Saves characters in browser via html5 storage (when supported by browser)
-                            <li>Prints a no frills character sheet with plenty of space to calculate stamina, draw character portaits, and take notes
+                <li>Randomly Generates characters as described in the Icons Assembled RPG Book (chapter 2)</li>
+                <li>Supports the Points Buy Generation method described in the Icons Assembled RPG Book (pg68)</li>
+                <li>Saves characters in browser via html5 storage (when supported by browser)</li>
+                <li>Prints a no frills character sheet with plenty of space to calculate stamina, draw character portaits, and take notes</li>
             </ul>
             <P>
                 Generate a Random Character based on point level
@@ -874,198 +1178,179 @@
                     <option value="55">55</option>
                     <option value="60">60</option>
                 </select>
-                <button onclick="generate()">Generate!</button>
-                <P>
-                    Create a new character (for use with the Point-Based Hero Creation)
-                    <button onclick="createNew();">Create New</button>
-                    <P>
-                        Save the current character to The Sidebar
-                        <button onclick="saveDude(currentDude);">Save</button>
-                        <P>
-                            Delete a character from The Sidebar
-                            <button onclick="deleteDude(currentDude);">Delete</button>
-                            <P>
-                                Delete all characters from The Sidebar
-                                <button onclick="deleteAllDudes();">Delete ALL</button>
-                                <P>
-                                    Create a No-frills Character Sheet suitable for printing (opens a new window)
-                                    <button onclick="printDude(currentDude)" value="print a div!">Printable Sheet!</button>
-                                    <hr>
-                                    <table style="height: 600px;">
-                                        <tr>
-                                            <th>Sidebar</th>
-                                            <th>Character</th>
-                                        </tr>
-                                        <tr>
-                                            <td width=150 valign=top>
-                                                <select style="width: 20em; height: 600px;" id='history' multiple></select>
-                                            </td>
-                                            <td valign=top>
-                                                <div>
-                                                    <table width=320>
-                                                        <tr>
-                                                            <th width=150>Identification</th>
-                                                            <th width=100>&nbsp;</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Name</td>
-                                                            <td>
-                                                                <input id="charId" type="text" style="width: 15em;"></input</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Profile Pic URL</td>
-                                                            <td>
-                                                                <input id="charImg" type="text" style="width: 15em;"></input</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Points</td>
-                                                            <td id="level"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan=2>&nbsp;</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th colspan=2>Origin</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan=2 id="origin"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan=2>
-                                                                <textarea id="originDescription" name="textarea" rows="10" cols="46"></textarea>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan=2>&nbsp;</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th colspan=2>Attributes (<span id='attributeValue'></span>)
-                                                            </th>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Prowess</td>
-                                                            <td id="prowess" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Coordination</td>
-                                                            <td id="coordination" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Strength</td>
-                                                            <td id="strength" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Intellect</td>
-                                                            <td id="intellect" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Awareness</td>
-                                                            <td id="awareness" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Willpower</td>
-                                                            <td id="willpower" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan=2>&nbsp;</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th colspan=2>Powers (<span id='powerValue'></span>)
-                                                            </th>
-                                                        </tr>
-                                                        <tr>
-                                                            <td id="power0" class="powerSelector"></td>
-                                                            <td id="powerLevel0" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td id="power1" class="powerSelector"></td>
-                                                            <td id="powerLevel1" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td id="power2" class="powerSelector"></td>
-                                                            <td id="powerLevel2" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td id="power3" class="powerSelector"></td>
-                                                            <td id="powerLevel3" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td id="power4" class="powerSelector"></td>
-                                                            <td id="powerLevel4" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td id="power5" class="powerSelector"></td>
-                                                            <td id="powerLevel5" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td id="power6" class="powerSelector"></td>
-                                                            <td id="powerLevel6" class="power"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan=2>&nbsp;</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th colspan=2>Specialties (<span id='specValue'></span>)
-                                                            </th>
-                                                            <tr>
-                                                                <td id="spec0" class="specSelector"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td id="spec1" class="specSelector"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td id="spec2" class="specSelector"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td id="spec3" class="specSelector"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td id="spec4" class="specSelector"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td id="spec5" class="specSelector"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td id="spec6" class="specSelector"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td id="spec7" class="specSelector"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td id="spec8" class="specSelector"></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colspan=2>&nbsp;</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colspan=2 id="origin">Qualities</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colspan=2>
-                                                                    <textarea id="quality1" name="textarea" rows="2" cols="46"></textarea>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colspan=2>
-                                                                    <textarea id="quality2" name="textarea" rows="2" cols="46"></textarea>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td colspan=2>
-                                                                    <textarea id="quality3" name="textarea" rows="2" cols="46"></textarea>
-                                                                </td>
-                                                            </tr>
-                                                    </table>
-                                                </div>
-                                                </td>
-                                                <td valign=top>
-                                                    <div>
-                                                        <img id="char_img" width=320 />
-                                                    </div>
-                                                </td>
-                                                </tr>
-                                    </table>
-                                    <div id='log'></div>
+	            <button onclick="generate()">Generate!</button>
+            </P>
+            <P>
+                Create a new character (for use with the Point-Based Hero Creation)
+                <button onclick="createNew();">Create New</button>
+            </P>
+            <P>
+                Save the current character to The Sidebar
+                <button onclick="saveDude(currentDude);">Save</button>
+            </P>
+            <P>
+                Delete a character from The Sidebar
+                <button onclick="deleteDude(currentDude);">Delete</button>
+            </P>
+            <P>
+                Delete all characters from The Sidebar
+                <button onclick="deleteAllDudes();">Delete ALL</button>
+            </P>
+            <P>
+                Create a No-frills Character Sheet suitable for printing (opens a new window)
+                <button onclick="printDude(currentDude)" value="print a div!">Printable Sheet!</button>
+            </P>
+            <hr>
+            <table style="height: 600px;">
+                <tr>
+                    <th>Sidebar</th>
+                    <th>Character</th>
+                </tr>
+                <tr>
+                    <td width=150 valign='top'>
+                        <select style="width: 20em; height: 600px;" id='history' multiple></select>
+                    </td>
+                    <td valign='top'>
+                        <div>
+                            <table width=320>
+                                <tr>
+                                    <th width=150>Identification</th>
+                                    <th width=100>&nbsp;</th>
+                                </tr>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>
+                                        <input id="charId" type="text" style="width: 15em;"></input</td>
+                                </tr>
+                                <tr>
+                                    <td>Profile Pic URL</td>
+                                    <td>
+                                        <input id="charImg" type="text" style="width: 15em;"></input</td>
+                                </tr>
+                                <tr>
+                                    <td>Points</td>
+                                    <td id="level"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan=2>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <th colspan=2>Origin</th>
+                                </tr>
+                                <tr>
+                                    <td colspan=2 id="origin"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan=2>
+                                        <textarea id="originDescription" name="textarea" rows="10" cols="46"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan=2>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <th colspan=2>Attributes (<span id='attributeValue'></span>)
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td>Prowess</td>
+                                    <td id="prowess" class="power"></td>
+                                </tr>
+                                <tr>
+                                    <td>Coordination</td>
+                                    <td id="coordination" class="power"></td>
+                                </tr>
+                                <tr>
+                                    <td>Strength</td>
+                                    <td id="strength" class="power"></td>
+                                </tr>
+                                <tr>
+                                    <td>Intellect</td>
+                                    <td id="intellect" class="power"></td>
+                                </tr>
+                                <tr>
+                                    <td>Awareness</td>
+                                    <td id="awareness" class="power"></td>
+                                </tr>
+                                <tr>
+                                    <td>Willpower</td>
+                                    <td id="willpower" class="power"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan=2>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <th colspan=2>Powers (<span id='powerValue'></span>) <button id="addPower">+</button>
+                                    </th>
+                                </tr>
+                                <tr>
+                                <td colspan=2><table id='powerTable' width=450></table></td>
+                                </tr>
+                                <tr>
+                                    <td colspan=2>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <th colspan=2>Specialties (<span id='specValue'></span>)
+                                    </th>
+                                    <tr>
+                                        <td id="spec0" class="specSelector"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="spec1" class="specSelector"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="spec2" class="specSelector"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="spec3" class="specSelector"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="spec4" class="specSelector"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="spec5" class="specSelector"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="spec6" class="specSelector"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="spec7" class="specSelector"></td>
+                                    </tr>
+                                    <tr>
+                                        <td id="spec8" class="specSelector"></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=2>&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=2 id="origin">Qualities</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=2>
+                                            <textarea id="quality1" name="textarea" rows="2" cols="46"></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=2>
+                                            <textarea id="quality2" name="textarea" rows="2" cols="46"></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=2>
+                                            <textarea id="quality3" name="textarea" rows="2" cols="46"></textarea>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                        </td>
+                        <td valign=top>
+                            <div>
+                                <img id="char_img" width=320 />
+                            </div>
+                        </td>
+                        </tr>
+            </table>
+            <div id='log'></div>
     </div>
     <div id="print-template" style="display: none">
         <div class="printable">
@@ -1213,7 +1498,5 @@
             </table>
         </div>
     </div>
-
 </body>
-
 </html>
