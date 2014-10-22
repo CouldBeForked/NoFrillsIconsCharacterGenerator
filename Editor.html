@@ -6,6 +6,12 @@
             background: black;
             color: white;
         }
+        select.modElement {
+         	width : 200px;
+        }
+        input.modElement {
+         	width : 200px;
+        }
     </style>
 </head>
 
@@ -66,7 +72,7 @@
 		};
 
 
-
+		var SEQUENCE_NUMBER = 0;
 
         var printOldDude = function(dude) {
             prepDudePrintout(dude);
@@ -200,13 +206,13 @@
             .concat(sensoryPowers.unique());
         allPowers = [" "].concat(allPowers.sort());
 
-        var standardExtras = ["Affects Others", "Affects X", "Broadcast",
+        var standardExtras = ["", "Affects Others", "Affects X", "Broadcast",
             "Burst", "Contagious", "Defensive", "Effect", "Level Duration",
             "Passengers", "Ranged", "Rangeless", "Reversible",
             "Secondary Effect", "Slow Recovery"
         ];
 
-        var standardLimitations = ["Animals Only", "Blocked by X", "Burnout",
+        var standardLimitations = ["", "Animals Only", "Blocked by X", "Burnout",
             "Close Range", "Concentration", "Constant", "Degrades",
             "Exclusive", "Extra Only", "Line of Sight", "Max Only",
             "No Stunts", "Only X", "Others Only", "Performance",
@@ -543,9 +549,7 @@
                 var p = {};
                 p.power = randomPower();
                 p.level = randomLevel();
-                p.extras = [];
-                p.limitations = [];
-                p.notes = [];
+                p.modifiers = [];
                 dude.powers.push(p);
             };
             dude.specs = [];
@@ -661,6 +665,7 @@
             }
             displayDude(dude);
             currentDude = dude;
+            saveDude(dude);
 
             seed = Date.now();
         };
@@ -867,9 +872,7 @@
     			var qqq = {};
     			qqq.power = '';
     			qqq.level = 0;
-    			qqq.extras = [];
-    			qqq.limitations = [];
-    			qqq.notes = [];
+    			qqq.modifiers = [];
     			addPower(currentDude, qqq);
     			displayPower(currentDude, qqq);
     		});
@@ -888,19 +891,17 @@
                     tempDudes = JSON.parse(dudeString);
                     jQuery.each(tempDudes, function(index, d) {
 	                    jQuery.each(d.powers, function(index, p) {
-	                   		if (jQuery.isEmptyObject(p.extras)) {
-	                   			p.extras = [];
+	                   		if (jQuery.isEmptyObject(p.modifiers)) {
+	                   			p.modifiers = [];
 		                    }
-	                   		if (jQuery.isEmptyObject(p.limitations)) {
-	                   			p.limitations = [];
-		                    }
-	                   		if (jQuery.isEmptyObject(p.notes)) {
-	                   			p.notes = [];
-		                    }
+		                    jQuery.each(p.modifiers, function(index, m) {
+		                    	if (m.num <= SEQUENCE_NUMBER) {
+		                    		SEQUENCE_NUMBER = m.num +1;
+		                    	}
+		                    });
 	                    });
 	                    dudes.push(d);
 					});
-
                     refreshDudeList();
                 }
             }
@@ -912,9 +913,7 @@
 			if ($.isEmptyObject(pow)) {
 				power.power = "";
 				power.level = 0;
-				power.extras = [];
-				power.limitations = [];
-				power.notes = [];
+				power.modifiers = [];
 			} else {
 				power = pow;
 			}
@@ -928,134 +927,158 @@
 
 			// adds an extra to the power
 			var addExtra = function(eee) {
-				var extra = eee;
+				var extra = {};
 				if ($.isEmptyObject(eee)) {
-					extra = "";
+					extra.type = "E";
+					extra.value = "";
+					extra.num = SEQUENCE_NUMBER++;
+				} else {
+					// reset the unique ID
+					extra.type = "E";
+					extra.value = eee;
+					extra.num = SEQUENCE_NUMBER++;
 				}
+				power.modifiers.push(extra);
+				return extra;
+			};
+			
+			var displayExtra = function(extra) {
 				// add a row to the table 
 				var extraRow = extraTemplate;
-				var ddd = $("<select>");
+				var ddd = $("<select class='modElement'>");
 				jQuery.each(standardExtras, function(index, value) {
 					ddd.append("<option>" + value + "</option>");
 				});
 
-				var extraRow = $(extraRow).find('.extraSelector').append(ddd)
-						.end();
+				var extraRow = $(extraRow).find('.extraSelector').append(ddd).end();
 
 				$(row).find('.modifiers').append(extraRow).end();
 
 				// initialize the power value (if it is provided)
-				$(extraRow).find('td.extraSelector>select').val(extra);
+				var node = $(extraRow).find('td.extraSelector>select'); 
+				node.val(extra.value);
+				node.data("num", extra.num);
 
 				// handle change event
-				$(extraRow).find(".extraSelector>select").change(function() {
-					//debug('Change Extra Before {0}'.f(extra));
-					var before = extra;
-					extra = $(this).val();
-					power.extras = $.grep(power.extras, function(v) {
-						return v != before;
+				$(extraRow).find(".extraSelector>select").change(function(eee) {
+					val = $(this).val();
+					jQuery.each(power.modifiers, function(i,v){
+						if (v.num === extra.num) {
+							v.value = val;
+						}
 					});
-					power.extras.push(extra);
-					//debug('Change Extra After {0}'.f(extra));
 				});
 
 				// handle delete event
 				$(extraRow).find(".extraDelete").click(function() {
-					//debug('Delete Extra');
-					power.extras = $.grep(power.extras, function(v) {
-						return v != extra;
+					power.modifiers = $.grep(power.modifiers, function(v) {
+						return v.num != extra.num;
 					});
 					$(extraRow).remove();
 				});
 			}; // end of addExtra
 
-			// adds a limitation ot the table
+
+			// adds an limitation to the power
 			var addLimitation = function(eee) {
-				var limitation = eee;
+				var limitation = {};
 				if ($.isEmptyObject(eee)) {
-					limitation = "";
+					limitation.type = "L";
+					limitation.value = "";
+					limitation.num = SEQUENCE_NUMBER++;
+				} else {
+					// reset the unique ID
+					limitation.type = "L";
+					limitation.value = eee;
+					limitation.num = SEQUENCE_NUMBER++;
 				}
-				var limitationRow = limitationTemplate;
+				return limitation;
+			};
+				
+			var displayLimitation = function(limitation) {
 
 				// add a row to the table 
-				var ddd = $("<select>");
+				var limitationRow = limitationTemplate;
+				var ddd = $("<select class='modElement'>");
 				jQuery.each(standardLimitations, function(index, value) {
 					ddd.append("<option>" + value + "</option>");
 				});
 
-				var limitationRow = $(limitationRow)
-						.find('.limitationSelector').append(ddd).end();
-				// initialize the power value (if it is provided)
-				$(limitationRow).find('td.limitationSelector>select').val(
-						limitation);
+				var limitationRow = $(limitationRow).find('.limitationSelector').append(ddd).end();
 
 				$(row).find('.modifiers').append(limitationRow).end();
 
+				// initialize the power value (if it is provided)
+				var node = $(limitationRow).find('td.limitationSelector>select'); 
+				node.val(limitation.value);
+				node.data("num", limitation.num);
+
 				// handle change event
-				$(limitationRow).find(".limitationSelector>select")
-						.change(
-								function() {
-									//debug('Change limitation Before {0}'.f(limitation));
-									var before = limitation;
-									limitation = $(this).val();
-									power.limitations = $.grep(
-											power.limitations, function(v) {
-												return v != before;
-											});
-									power.limitations.push(limitation);
-									//debug('Change limitation After {0}'.f(limitation));
-								});
+				$(limitationRow).find(".limitationSelector>select").change(function(eee) {
+					val = $(this).val();
+					jQuery.each(power.modifiers, function(i,v){
+						if (v.num === limitation.num) {
+							v.value = val;
+						}
+					});
+				});
 
 				// handle delete event
 				$(limitationRow).find(".limitationDelete").click(function() {
 					//debug('Delete limitation');
-					power.limitations = $.grep(power.limitations, function(v) {
-						return v != limitation;
+					power.modifiers = $.grep(power.modifiers, function(v) {
+						return v.num != limitation.num;
 					});
 					$(limitationRow).remove();
 				});
-			}; // end of addLimitation()
+			}; // end of addLimitation
 
-
-			// adds a limitation to the table
+			// adds a Nimitation to the table
 			var addNote = function(eee) {
-				var note = eee;
+				var note = {};
 				if ($.isEmptyObject(eee)) {
-					note = "";
+					note.type = "N";
+					note.value = "";
+					note.num = SEQUENCE_NUMBER++;
+				} else {
+					// reset the unique ID
+					note.type = "N";
+					note.value = eee;
+					note.num = SEQUENCE_NUMBER++;
 				}
+				return note;
+			};
+			
+			var displayNote = function(note) {
+
 				var noteRow = noteTemplate;
 
 				// add a row to the table 
-				var ddd = $("<input></input");
+				var ddd = $("<input class='modElement'></input");
 				var noteRow = $(noteRow).find('.noteText').append(ddd).end();
-				// initialize the power value (if it is provided)
-				$(noteRow).find('td.noteText>input').val(note);
-				$(noteRow).find('td.noteText>input').data("old", note);
-
 				$(row).find('.modifiers').append(noteRow).end();
+				
+				// initialize the power value (if it is provided)
+				var node = $(noteRow).find('.noteText>input'); 
+				node.val(note.value);
+				node.data("num", note.num);
+
 
 				// handle change event
 				$(noteRow).find(".noteText>input").change(function(eee) {
-					////debug('Change note Before {0}'.f(note));
-					
-					note = $(this).val();
-					var before = $(noteRow).find('td.noteText>input').data("old");
-					
-					// remove the old note
-					 power.notes = $.grep(power.notes, function(v) {
-						 return v != before;
-					 });
-
-					$(noteRow).find('td.noteText>input').data("old", note);
-					power.notes.push(note);
-					// //debug('Change note After {0}'.f(note));
+					noteVal = $(this).val();
+					jQuery.each(power.modifiers, function(i,v){
+						if (v.num === note.num) {
+							v.value = noteVal;
+						}
+					});
 				});
 
 				// handle delete event
 				$(noteRow).find(".noteDelete").click(function() {
 					////debug('Delete note');
-					power.notes = $.grep(power.notes, function(v) {
-						return v != note;
+					power.modifiers = $.grep(power.modifiers, function(v) {
+						return v.num != note.num;
 					});
 					$(noteRow).remove();
 				});
@@ -1088,16 +1111,14 @@
 			// initialize the power value
 			$(row).find('td.powerSelector>select').val(power.power);
 			$(row).find('td.powerLevel>select').val(power.level);
-			$.each(power.extras, function(i, v) {
-				addExtra(v);
-			});
-
-			$.each(power.limitations, function(i, v) {
-				addLimitation(v);
-			});
-
-			$.each(power.notes, function(i, v) {
-				addNote(v);
+			$.each(power.modifiers, function(i, v) {
+				if (v.type ==="E"){
+					displayExtra(v);					
+				} else if (v.type ==="L"){
+					displayLimitation(v);
+				} else if (v.type ==="N"){
+					displayNote(v);
+				}
 			});
 
 			// add the completed row
@@ -1125,22 +1146,23 @@
 
 			// add extra clicked
 			$(row).find('.addExtra').click(function() {
-				power.extras.push("");
-				addExtra("");
+				var extra = addExtra("");
+				power.modifiers.push(extra);
+				displayExtra(extra);
 			});
 
 			// add limitation clicked
 			$(row).find('.addLimitation').click(function() {
-				////debug('Add a limitation');
-				power.limitations.push("");
-				addLimitation("");
+				var limitation = addLimitation("");
+				power.modifiers.push(limitation);
+				displayLimitation(limitation);				
 			});
 
 			// add note clicked
 			$(row).find('.addNote').click(function() {
-				//debug('Add a note');
-				power.notes.push("");
-				addNote("");
+				var note = addNote("");
+				power.modifiers.push(note);
+				displayNote(note);
 			});
 
 		}; // end of displayPower()
@@ -1185,7 +1207,7 @@
                 <button onclick="createNew();">Create New</button>
             </P>
             <P>
-                Save the current character to The Sidebar
+                Save the characters in The Sidebar Browser Storage
                 <button onclick="saveDude(currentDude);">Save</button>
             </P>
             <P>
