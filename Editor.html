@@ -93,47 +93,53 @@
             wnd.document.writeln(h);
         };
 
-        var prepDudePrintout = function(dude) {
+			var prepDudePrintout = function(dude) {
 
-            $("#print_level").text(dude.value);
-            $("#print_attributeValue").text(dude.attributeValue);
-            $("#print_origin").text(dude.origin);
-            $("#print_originDescription").text(dude.description);
-            $("#print_prowess").text(levelDescription(dude.prowess));
-            $("#print_coordination").text(levelDescription(dude.coordination));
-            $("#print_strength").text(levelDescription(dude.strength));
-            $("#print_intellect").text(levelDescription(dude.intellect));
-            $("#print_awareness").text(levelDescription(dude.awareness));
-            $("#print_willpower").text(levelDescription(dude.willpower));
-            $("#print_stamina").text(calcStamina(dude));
-            $("#print_powerValue").text(dude.powerValue);
-            $("#print_quality1").text(dude.quality1);
-            $("#print_quality2").text(dude.quality2);
-            $("#print_quality3").text(dude.quality3);
+				$("#print_level").text(dude.value);
+				$("#print_attributeValue").text(dude.attributeValue);
+				$("#print_origin").text(dude.origin);
+				$("#print_originDescription").text(dude.description);
+				$("#print_prowess").text(levelDescription(dude.prowess));
+				$("#print_coordination").text(levelDescription(dude.coordination));
+				$("#print_strength").text(levelDescription(dude.strength));
+				$("#print_intellect").text(levelDescription(dude.intellect));
+				$("#print_awareness").text(levelDescription(dude.awareness));
+				$("#print_willpower").text(levelDescription(dude.willpower));
+				$("#print_stamina").text(calcStamina(dude));
+				$("#print_powerValue").text(dude.powerValue);
+				$("#print_quality1").text(dude.quality1);
+				$("#print_quality2").text(dude.quality2);
+				$("#print_quality3").text(dude.quality3);
 
-            var np = dude.powers.length;
-            for (var x = 0; x < np; x++) {
-                $("#print_power" + x).text(dude.powers[x].power);
-                $("#print_powerLevel" + x).text(
-                    levelDescription(dude.powers[x].level));
-            };
-            for (var x = np; x < 5; x++) {
-                $("#print_power" + x).text("");
-                $("#print_powerLevel" + x).text("");
-            };
+				// clear the print power table
+				$('#print_powertable').empty();
+				var header = $("<tr>");
+				header.append('<th colspan=2>Powers ({0}) </th>'.f(dude.powerValue));
+				$("#print_powertable").append(header);
+				jQuery.each(dude.powers, function(i, power) {
+					var row = $("<tr>");
+					row.append("<td>{0}</td>".f(power.power));
+					row.append("<td class='level'>{0}</td>".f(levelDescription(power.level)));
+					$("#print_powertable").append(row);
+					jQuery.each(power.modifiers, function(i, modifier) {
+						var mod = $("<tr>");
+						mod.append("<td colspan=2 class='modifier'><i>{0}</i></td>".f(modifier.value))
+						$("#print_powertable").append(mod);
+					});
+				});
 
-            $("#print_specValue").text(dude.specValue);
-            $("#print_specialties").text(dude.specs.join(', '));
-            $("#print_seed").text(dude.name);
-            $("#print_level").text(dude.value);
+				$("#print_specValue").text(dude.specValue);
+				$("#print_specialties").text(dude.specs.join(', '));
+				$("#print_seed").text(dude.name);
+				$("#print_level").text(dude.value);
 
-            if ($.isEmptyObject(dude.img)) {
-                $("#print_img").attr("src", TRANSPARENT_IMAGE);
-            } else {
-                $("#print_img").attr("src", dude.img);
-            }
-            seed = Date.now();
-        };
+				if ($.isEmptyObject(dude.img)) {
+					$("#print_img").attr("src", TRANSPARENT_IMAGE);
+				} else {
+					$("#print_img").attr("src", dude.img);
+				}
+				seed = Date.now();
+			};
 
         var dudes = [];
         var currentDude = {};
@@ -600,9 +606,20 @@
 
         var displayDude = function(dude) {
 
+            $("#charId").val(dude.name);
+            $("#value").text(dude.value);
+			$("#charImgUrl").val(dude.img);
+
+            if ($.isEmptyObject(dude.img)) {
+                $("#picture").attr("src", "");
+            } else {
+                $("#picture").attr("src", dude.img);
+            }
+
+            
+            
             $("#attributeValue").text(dude.attributeValue);
             $("#origin").text(dude.origin);
-
             if ($.isEmptyObject(dude.description)) {
                 dude.description = "";
             }
@@ -640,20 +657,6 @@
 
             $("#specValue").text(dude.specValue);
             $("#specialties").text(dude.specs.join(', '));
-            $("#charId").val(dude.name);
-            if ($.isEmptyObject(dude.img)) {
-                $("#charImg").attr("src", TRANSPARENT_IMAGE);
-            } else {
-                $("#charImg").attr("src", dude.img);
-            }
-            $("#level").text(dude.value);
-
-            if ($.isEmptyObject(dude.img)) {
-                $("#char_img").attr("src", "");
-            } else {
-                $("#char_img").attr("src", dude.img);
-            }
-
         };
 
         var generate = function() {
@@ -850,9 +853,9 @@
                 currentDude.name = $(this).val();
             });
 
-            $("#charImg").change(function(data) {
+            $("#charImgUrl").change(function(data) {
                 currentDude.img = $(this).val();
-                $("#char_img").attr("src", $(this).val());
+                $("#picture").attr("src", $(this).val());
             });
 
             $("#originDescription").change(function(data) {
@@ -938,7 +941,6 @@
 					extra.value = eee;
 					extra.num = SEQUENCE_NUMBER++;
 				}
-				power.modifiers.push(extra);
 				return extra;
 			};
 			
@@ -1247,11 +1249,11 @@
                                 <tr>
                                     <td>Profile Pic URL</td>
                                     <td>
-                                        <input id="charImg" type="text" style="width: 15em;"></input</td>
+                                        <input id="charImgUrl" type="text" style="width: 15em;"></input</td>
                                 </tr>
                                 <tr>
                                     <td>Points</td>
-                                    <td id="level"></td>
+                                    <td id="value"></td>
                                 </tr>
                                 <tr>
                                     <td colspan=2>&nbsp;</td>
@@ -1264,7 +1266,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan=2>
-                                        <textarea id="originDescription" name="textarea" rows="10" cols="46"></textarea>
+                                        <textarea id="originDescription" name="textarea" rows="10" cols="55"></textarea>
                                     </td>
                                 </tr>
                                 <tr>
@@ -1367,158 +1369,126 @@
                         </td>
                         <td valign=top>
                             <div>
-                                <img id="char_img" width=320 />
+                                <img id="picture" width=320 />
                             </div>
                         </td>
                         </tr>
             </table>
             <div id='log'></div>
     </div>
-    <div id="print-template" style="display: none">
-        <div class="printable">
-            <table>
-                <tr>
-                    <td>
-                        <table width=320>
-                            <tr>
-                                <th colspan=2>Identification</th>
-                            </tr>
-                            <tr>
-                                <td>ID</td>
-                                <td id="print_seed"></td>
-                            </tr>
-                            <tr>
-                                <td>Points</td>
-                                <td id="print_level"></td>
-                            </tr>
-                            <tr>
-                                <td colspan=2>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <th colspan=2>Origin</th>
-                            </tr>
-                            <tr>
-                                <td colspan=2 id="print_origin"></td>
-                            </tr>
-                            <tr>
-                                <td colspan=2 id="print_originDescription"></td>
-                            </tr>
-                            <tr>
-                                <td colspan=2>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <th colspan=2>Qualities</th>
-                            </tr>
-                            <tr>
-                                <td colspan=2>
-                                    <ol style="padding-left: 20">
-                                        <li id="print_quality1"></li>
-                                        <li id="print_quality2"></li>
-                                        <li id="print_quality3"></li>
-                                    </ol>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan=2>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <th colspan=2>Attributes (<span id='print_attributeValue'></span>)
-                                </th>
-                            </tr>
-                            <tr>
-                                <td>Prowess</td>
-                                <td id="print_prowess"></td>
-                            </tr>
-                            <tr>
-                                <td>Coordination</td>
-                                <td id="print_coordination"></td>
-                            </tr>
-                            <tr>
-                                <td>Strength</td>
-                                <td id="print_strength"></td>
-                            </tr>
-                            <tr>
-                                <td>Intellect</td>
-                                <td id="print_intellect"></td>
-                            </tr>
-                            <tr>
-                                <td>Awareness</td>
-                                <td id="print_awareness"></td>
-                            </tr>
-                            <tr>
-                                <td>Willpower</td>
-                                <td id="print_willpower"></td>
-                            </tr>
-                            <tr>
-                                <td colspan=2>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td>Stamina</td>
-                                <td id="print_stamina"></td>
-                            </tr>
-                            <tr>
-                                <td colspan=2>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <th colspan=2>Powers (<span id='print_powerValue'></span>)
-                                </th>
-                            </tr>
-                            <tr>
-                                <td id="print_power0"></td>
-                                <td id="print_powerLevel0"></td>
-                            </tr>
-                            <tr>
-                                <td id="print_power1"></td>
-                                <td id="print_powerLevel1"></td>
-                            </tr>
-                            <tr>
-                                <td id="print_power2"></td>
-                                <td id="print_powerLevel2"></td>
-                            </tr>
-                            <tr>
-                                <td id="print_power3"></td>
-                                <td id="print_powerLevel3"></td>
-                            </tr>
-                            <tr>
-                                <td id="print_power4"></td>
-                                <td id="print_powerLevel4"></td>
-                            </tr>
-                            <tr>
-                                <td id="print_power5"></td>
-                                <td id="print_powerLevel5"></td>
-                            </tr>
-                            <tr>
-                                <td id="print_power6"></td>
-                                <td id="print_powerLevel6"></td>
-                            </tr>
-                            <tr>
-                                <td id="print_power7"></td>
-                                <td id="print_powerLevel7"></td>
-                            </tr>
-                            <tr>
-                                <td id="print_power8"></td>
-                                <td id="print_powerLevel8"></td>
-                            </tr>
-                            <tr>
-                                <td colspan=2>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <th colspan=2>Specialties (<span id='print_specValue'></span>)
-                                </th>
-                                </th>
-                                <tr>
-                                    <td colspan=2 id="print_specialties"></td>
-                                </tr>
-                        </table>
-                    </td>
-                    <td valign=top>
-                        <div>
-                            <img id="print_img" width=320 />
-                        </div>
-                    </td>
-                    </tr>
-            </table>
-        </div>
+    <div id="print-template" style="display:none">    	
+			<div class="printable">
+			    <style>
+			        
+					td.level, td.attribute, td.power {
+						width: 160px;
+					}
+			
+					td.modifier {
+						padding-left: 20px;
+					}
+			    </style>
+				<table>
+					<tr>
+						<td>
+						<table width=320>
+							<tr>
+								<th colspan=2>Identification</th>
+							</tr>
+							<tr>
+								<td>ID</td>
+								<td id="print_seed"></td>
+							</tr>
+							<tr>
+								<td>Points</td>
+								<td id="print_level"></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Origin</th>
+							</tr>
+							<tr>
+								<td colspan=2 id="print_origin"></td>
+							</tr>
+							<tr>
+								<td colspan=2 id="print_originDescription"></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Qualities</th>
+							</tr>
+							<tr>
+								<td colspan=2>
+								<ol style="padding-left: 20">
+									<li id="print_quality1"></li>
+									<li id="print_quality2"></li>
+									<li id="print_quality3"></li>
+								</ol></td>
+							</tr>
+						</table>
+						<table id="print_attributetable" width=320>
+							<tr>
+								<th colspan=2>Attributes (<span id='print_attributeValue'></span>) </th>
+							</tr>
+							<tr>
+								<td class='atribute'>Prowess</td>
+								<td id="print_prowess" class='level'></td>
+							</tr>
+							<tr>
+								<td>Coordination</td>
+								<td id="print_coordination" class='level'></td>
+							</tr>
+							<tr>
+								<td class='atribute'>Strength</td>
+								<td id="print_strength" class='level'></td>
+							</tr>
+							<tr>
+								<td class='atribute'>Intellect</td>
+								<td id="print_intellect" class='level'></td>
+							</tr>
+							<tr>
+								<td class='atribute'>Awareness</td>
+								<td id="print_awareness" class='level'></td>
+							</tr>
+							<tr>
+								<td class='atribute'>Willpower</td>
+								<td id="print_willpower" class='level'></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<td class='atribute'>Stamina</td>
+								<td id="print_stamina" class='level'></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+						</table>
+						<table id="print_powertable" width=320>
+							<tr>
+								<th colspan=2>Powers (<span id='print_powerValue'></span>) </th>
+							</tr>
+						</table><p></p>
+						<table id="print_specialtyTable" width=320>
+							<tr>
+								<th colspan=2>Specialties (<span id='print_specValue'></span>) </th>
+								</th>
+							<tr>
+								<td colspan=2 id="print_specialties"></td>
+							</tr>
+						</table></td>
+						<td valign=top>
+						<div>
+							<img id="print_img" width=320 />
+						</div></td>
+					</tr>
+				</table>
+			</div>
     </div>
 </body>
 </html>
