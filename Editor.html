@@ -488,7 +488,7 @@
             dude.attributeValue = dude.prowess + dude.coordination + dude.strength + dude.intellect + dude.awareness + dude.willpower;
             dude.powerValue = 0;
             for (var x = 0; x < dude.powers.length; x++) {
-                dude.powerValue += dude.powers[x].level;
+                dude.powerValue += parseInt(dude.powers[x].level,10);
             };
             dude.specValue = 0;
             $.each(dude.specs, function(index, value) {
@@ -574,10 +574,10 @@
         
         // add the row to the table
 		var rowTemplate = '<table><tr>';
+		rowTemplate += '<td><button class="powerDelete">-</button></td>';
 		rowTemplate += '<td class="powerSelector"></td>';
 		rowTemplate += '<td class="powerLevel"></td>';
-		rowTemplate += '<td><button class="powerDelete">-</button>';
-		rowTemplate += '<button class="addExtra">E+</button>';
+		rowTemplate += '<td><button class="addExtra">E+</button>';
 		rowTemplate += '<button class="addLimitation">L+</button>';
 		rowTemplate += '<button class="addNote">N+</button></td>';
 		rowTemplate += '</tr><tr><td colspan=5><table class="modifiers"></table></td>';
@@ -615,8 +615,6 @@
             } else {
                 $("#picture").attr("src", dude.img);
             }
-
-            
             
             $("#attributeValue").text(dude.attributeValue);
             $("#origin").text(dude.origin);
@@ -643,9 +641,9 @@
            	$('#powerTable').empty();
             var np = dude.powers.length;
             var tmpPowers = dude.powers;
-            for (var x = 0; x < np; x++) {
-    			displayPower(currentDude, dude.powers[x]);
-            };
+            jQuery.each(dude.powers, function(i, pow){
+            	displayPower(currentDude, pow);
+            });
 
             var ns = dude.specs.length;
             for (var x = 0; x < ns; x++) {
@@ -1136,6 +1134,8 @@
 			$(row).find('.powerLevel>select').change(function(e) {
 				var before = power.level;
 				power.level = $(this).val();
+				calcDudeValue(currentDude);
+				displayDude(currentDude);
 			});
 
 			// delete power clicked
@@ -1144,6 +1144,9 @@
 					return v != power;
 				});
 				$(row).remove();
+				calcDudeValue(currentDude);
+				displayDude(currentDude);
+
 			});
 
 			// add extra clicked
