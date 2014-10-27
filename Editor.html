@@ -41,17 +41,17 @@
 		</script>
 
 		<script>
-			var TRANSPARENT_IMAGE = "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
 
-			function supports_html5_storage() {
-				try {
-					return 'localStorage' in window && window['localStorage'] !== null;
-				} catch (e) {
-					return false;
-				}
-			}
+/*
+ * lazy globals
+ */		
+				var dudes = []; // the array of characters
+				var currentDude = {}; // the current character
 
 
+/*
+ * prototype tools
+ */
 			Array.prototype.unique = function() {
 				var a = this.concat();
 				for (var i = 0; i < a.length; ++i) {
@@ -73,17 +73,10 @@
 			};
 
 			var SEQUENCE_NUMBER = 0;
-
-			var printOldDude = function(dude) {
-				prepDudePrintout(dude);
-				$('.nonprintable').css('display', 'none');
-				$('#print-template').css('display', 'inline');
-				document.title = dude.name;
-				window.print();
-				$('#print-template').css('display', 'none');
-				$('.nonprintable').css('display', 'block');
-				document.title = 'ICONS Character Generator';
-			};
+/*
+ *  print functions
+ */
+			var TRANSPARENT_IMAGE = "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
 
 			var printDude = function(dude) {
 				prepDudePrintout(dude);
@@ -123,13 +116,23 @@
 					$("#print_powertable").append(row);
 					jQuery.each(power.modifiers, function(i, modifier) {
 						var mod = $("<tr>");
-						mod.append("<td colspan=2 class='modifier'><i>{0}</i></td>".f(modifier.value))
+						mod.append("<td colspan=2 class='modifier'><i>{0}</i></td>".f(modifier.value));
 						$("#print_powertable").append(mod);
 					});
 				});
 
 				$("#print_specValue").text(dude.specValue);
-				$("#print_specialties").text(dude.specs.join(', '));
+				
+				var specStringArray = [];
+				dude.specs.sort(function (a,b){ 
+					return a.spec > b.spec;
+				});
+				dude.specs.forEach(
+					function(s) {
+						specStringArray.push(s.spec);
+					}
+				);
+				$("#print_specialties").text(specStringArray.join(', '));
 				$("#print_seed").text(dude.name);
 				$("#print_level").text(dude.value);
 
@@ -141,8 +144,15 @@
 				seed = Date.now();
 			};
 
-			var dudes = [];
-			var currentDude = {};
+
+			function supports_html5_storage() {
+				try {
+					return 'localStorage' in window && window['localStorage'] !== null;
+				} catch (e) {
+					return false;
+				}
+			}
+
 
 			var seed = 1;
 
@@ -155,33 +165,23 @@
 				return Math.floor((randomDave() * 100000) % 6 + 1);
 			};
 
+/*
+ * rules
+ */
 			var levels = ["", "Weak", "Poor", "Average", "Fair", "Good", "Great", "Incredible", "Amazing", "Fantastic", "Supreme"];
-
 			var origins = ["Unknown", "Trained", "Transformed", "Birthright", "Gimmick", "Artificial", "Unearthly"];
-
 			var alterationPowers = ["Ability Boost", "Ability Increase", "Alter Ego", "Alternate Form", "Aquatic", "Density", "Duplication", "Extra Body Parts", "Growth", "Invisibility", "Phasing", "Shrinking", "Animal Mimicry", "Material Mimicry", "Plant Mimicry", "Power Mimicry", "Stretching", "Transformation"];
-
 			var controlPowers = ["Alteration Ray", "Alteration Ray", "Element Control", "Element Control", "Probability Control", "Time Control", "Energy Control", "Energy Control", "Healing", "Telekinesis", "Telekinesis", "Transmutation", "Cosmic Power", "Gadgets", "Gadgets", "Magic", "Nullification", "Servant"];
-
 			var defensivePowers = ["Absorption", "Absorption", "Adaptation", "Force Field", "Force Field", "Force Field", "Immortality", "Life Support", "Life Support", "Life Support", "Reflection", "Reflection", "Regeneration", "Regeneration", "Resistance", "Resistance", "Resistance", "Resistance"];
-
 			var mentalPowers = ["Astral Projection", "Dream Control", "Emotion Control", "Emotion Control", "Illusion", "Images", "Mental Blast", "Mental Blast", "Mind Control", "Mind Shield", "Telepathy", "Telepathy"];
-
 			var movementPowers = ["Burrowing", "Dimensional Travel", "Flight", "Flight", "Leaping", "Leaping", "Spinning", "Super-Speed", "Super-Speed", "Swinging", "Teleportation", "Wall-Crawling"];
-
 			var offensivePowers = ["Affliction", "Binding", "Blast", "Blast", "Strike", "Strike", "Aura", "Dazzle", "Dazzle", "Energy Drain", "Fast Attack", "Stunning"];
-
 			var sensoryPowers = ["Detection", "Detection", "ESP", "Super-Senses", "Super-Senses", "Super-Senses", "Danger Sense", "Danger Sense", "Interface", "Postcognition", "Precognition", "Precognition"];
-
 			var allPowers = alterationPowers.concat(controlPowers.unique()).concat(defensivePowers.unique()).concat(mentalPowers.unique()).concat(movementPowers.unique()).concat(offensivePowers.unique()).concat(sensoryPowers.unique());
 			allPowers = [" "].concat(allPowers.sort());
-
 			var standardExtras = ["", "Affects Others", "Affects X", "Broadcast", "Burst", "Contagious", "Defensive", "Effect", "Level Duration", "Passengers", "Ranged", "Rangeless", "Reversible", "Secondary Effect", "Slow Recovery"];
-
 			var standardLimitations = ["", "Animals Only", "Blocked by X", "Burnout", "Close Range", "Concentration", "Constant", "Degrades", "Exclusive", "Extra Only", "Line of Sight", "Max Only", "No Stunts", "Only X", "Others Only", "Performance", "Preparation", "Source", "Temporary", "Tiring", "Uncontrolled", "Unpredictable", "Unstable"];
-
 			var specialties = ["", "Aerial Combat", "Art", "Athletics", "Athletics", "Business", "Drive", "Investigation", "Investigation", "Law", "Leadership", "Leadership", "Linguistics", "Martial Arts", "Martial Arts", "Medicine", "Mental Resistance", "Mental Resistance", "Military", "Occult", "Performance", "Pilot", "Power", "Power", "Power", "Psychiatry", "Science", "Science", "Sleight of Hand", "Stealth", "Stealth", "Technology", "Technology", "Underwater Combat", "Weapons", "Wrestling", "Wrestling"];
-
 			var originDescription = [];
 			originDescription[''] = '';
 			originDescription['Trained'] = 'The hero is a highly skilled individual; any powers actually come from superior training or specialized equipmentof your choice (attribute or power) is increased by +2 to a maximum of 10.';
@@ -429,18 +429,22 @@
 				return specialties[l + 1];
 			};
 
+/*
+ * End of Rules
+ */
 			var calcDudeValue = function(dude) {
 				dude.attributeValue = dude.prowess + dude.coordination + dude.strength + dude.intellect + dude.awareness + dude.willpower;
+
 				dude.powerValue = 0;
-				for (var x = 0; x < dude.powers.length; x++) {
-					dude.powerValue += parseInt(dude.powers[x].level, 10);
-				};
-				dude.specValue = 0;
-				$.each(dude.specs, function(index, value) {
-					if (!$.isEmptyObject(value)) {
-						dude.specValue++;
-					}
+				jQuery.each(dude.powers, function(i,p){
+					dude.powerValue += parseInt(p.level, 10);					
 				});
+
+				dude.specValue = 0;
+				jQuery.each(dude.specs, function(i,s){
+					dude.specValue += parseInt(s.level, 10);					
+				});
+
 				dude.value = dude.attributeValue + dude.powerValue + dude.specValue;
 			};
 
@@ -503,10 +507,11 @@
 					p.modifiers = [];
 					dude.powers.push(p);
 				};
+				
 				dude.specs = [];
 				var ns = randomNumSpec();
 				for (var x = 0; x < ns; x++) {
-					dude.specs.push(randomSpec());
+					dude.specs.push({spec: randomSpec(), level : 1});
 				};
 
 				calcDudeValue(dude);
@@ -579,22 +584,16 @@
 
 				$("#powerValue").text(dude.powerValue);
 
-				// delete all powers first
-
 				$('#powerTable').empty();
-				var np = dude.powers.length;
 				var tmpPowers = dude.powers;
 				jQuery.each(dude.powers, function(i, pow) {
-					displayPower(currentDude, pow);
+					displayPower(dude, pow);
 				});
 
-				var ns = dude.specs.length;
-				for (var x = 0; x < ns; x++) {
-					$("#spec" + x + ">select").val(dude.specs[x]);
-				};
-				for (var x = ns; x < 8; x++) {
-					$("#spec" + x + ">select").val("");
-				};
+				$('#specialtyTable').empty();
+				jQuery.each(dude.specs, function(i, spec) {
+					displaySpecialty(dude, spec);
+				});
 
 				$("#specValue").text(dude.specValue);
 				$("#specialties").text(dude.specs.join(', '));
@@ -621,6 +620,9 @@
 				seed = Date.now();
 			};
 
+/*
+ * Debugging log
+ */
 			var appendLog = function(d) {
 				var s = d.name;
 				var col = $('#history');
@@ -643,6 +645,10 @@
 				var log = $('#log').append("<div>" + l + "</div");
 			};
 
+
+/*
+ *  Sidebar
+ */
 			var refreshDudeList = function() {
 				$("#history").empty();
 				$.each(dudes, function(index, dude) {
@@ -710,7 +716,9 @@
 				refreshDudeList();
 			};
 
+
 			$(document).ready(function() {
+						
 				seed = Date.now();
 				$('.power').each(function(index, element) {
 					var ddd = $("<select>");
@@ -735,37 +743,6 @@
 							calcDudeValue(currentDude);
 							displayDude(currentDude);
 						}
-					});
-				});
-				$('.powerSelector').each(function(index, element) {
-					var ddd = $("<select>");
-					jQuery.each(allPowers, function(index, value) {
-						ddd.append("<option>" + value + "</option>");
-					});
-					$(element).append(ddd);
-					$(element).change(function() {
-						var i = element.id;
-						var d = $(ddd).val();
-						var l = parseInt(i.replace("power", ""));
-						currentDude.powers[l].power = d;
-						calcDudeValue(currentDude);
-						displayDude(currentDude);
-					});
-
-				});
-				$('.specSelector').each(function(index, element) {
-					var ddd = $("<select>");
-					jQuery.each(allSpecialties, function(index, value) {
-						ddd.append("<option>" + value + "</option>");
-					});
-					$(element).append(ddd);
-					$(element).change(function() {
-						var i = element.id;
-						var d = $(ddd).val();
-						var l = parseInt(i.replace("spec", ""));
-						currentDude.specs[l] = d;
-						calcDudeValue(currentDude);
-						displayDude(currentDude);
 					});
 				});
 
@@ -799,10 +776,20 @@
 					addPower(currentDude, qqq);
 					displayPower(currentDude, qqq);
 				});
+				$('#addSpecialty').click(function() {
+					var qqq = {};
+					qqq.spec = '';
+					qqq.level = 1;
+					addSpecialty(currentDude, qqq);
+					displaySpecialty(currentDude, qqq);
+				});
 
 				currentDude = buildDude(seed);
 				displayDude(currentDude);
 
+/*
+ * load dudes 
+ */
 				if (supports_html5_storage()) {
 
 					var dudeString = localStorage["dudes"];
@@ -812,16 +799,31 @@
 					} else {
 						tempDudes = JSON.parse(dudeString);
 						jQuery.each(tempDudes, function(index, d) {
-							jQuery.each(d.powers, function(index, p) {
+							// update from modifier-less powers to new powers
+							jQuery.each(d.powers, function(index, p) {								
 								if (jQuery.isEmptyObject(p.modifiers)) {
 									p.modifiers = [];
 								}
+								
+								// update the sequence number os that saved char
+								// power IDs don't duplicate new power IDs  
 								jQuery.each(p.modifiers, function(index, m) {
 									if (m.num <= SEQUENCE_NUMBER) {
 										SEQUENCE_NUMBER = m.num + 1;
 									}
 								});
 							});
+							
+							// potentially update from old string specs to object specs
+							var tmpSpecs = [];
+							jQuery.each(d.specs, function(index, s) {
+								if (typeof s === 'string' ) {
+									tmpSpecs.push({spec : s, level: 1});
+								}
+							});
+							if (tmpSpecs.length > 0) {
+								d.specs = tmpSpecs;
+							}
 							dudes.push(d);
 						});
 						refreshDudeList();
@@ -829,6 +831,9 @@
 				}
 			});
 
+/*
+ * Power table
+ */
 			var addPower = function(dude, pow) {
 
 				var power = {};
@@ -1089,6 +1094,64 @@
 
 			};
 			// end of displayPower()
+/*
+ * End of Power table
+ */
+
+/*
+ * Specialty table
+ */
+			var addSpecialty = function(dude, spec) {
+
+				var specialty = {};
+				if ($.isEmptyObject(spec)) {
+					specialty.spec = "";
+					specialty.level = 1;
+				} else {
+					specialty = spec;
+				}
+				dude.specs.push(specialty);
+			};
+
+			var displaySpecialty = function(dude, spec) {
+				var rt = "<tr>";
+				rt += "<td><button class='specialtyDelete'>-</button></td>";
+				rt += "<td class='specialtySelector'></td></tr>";
+				
+				var row = $(rt);
+
+				//append the list of powers
+				var ddd = $("<select>");
+				jQuery.each(allSpecialties, function(index, value) {
+					ddd.append("<option>" + value + "</option>");
+				});				
+				row = $(row).find('.specialtySelector').append(ddd).end();
+
+				// initialize the specialty value
+				$(row).find('td.specialtySelector>select').val(spec.spec);
+
+				// add the completed row
+				row.appendTo('#specialtyTable');
+
+				// power select box changed
+				$(row).find('td.specialtySelector>select').change(function(e) {
+					spec.spec = $(this).val();
+					calcDudeValue(currentDude);
+					displayDude(currentDude);
+				});
+
+				// delete power clicked
+				$(row).find('.specialtyDelete').click(function() {
+					dude.specs.splice(jQuery.inArray(spec, dude.specs),1);
+					$(row).remove();
+					calcDudeValue(currentDude);
+					displayDude(currentDude);
+				});
+			};
+
+/*
+ * End of Specialty table
+ */
 
 			$('#printDude').click(function() {
 				printDude(currentDude);
@@ -1248,33 +1311,13 @@
 									<td colspan=2>&nbsp;</td>
 								</tr>
 								<tr>
-									<th colspan=2>Specialties (<span id='specValue'></span>) </th>
-								<tr>
-									<td id="spec0" class="specSelector"></td>
+									<th colspan=2>Specialties (<span id='specValue'></span>)
+									<button id="addSpecialty">
+										+
+									</button></th>
 								</tr>
 								<tr>
-									<td id="spec1" class="specSelector"></td>
-								</tr>
-								<tr>
-									<td id="spec2" class="specSelector"></td>
-								</tr>
-								<tr>
-									<td id="spec3" class="specSelector"></td>
-								</tr>
-								<tr>
-									<td id="spec4" class="specSelector"></td>
-								</tr>
-								<tr>
-									<td id="spec5" class="specSelector"></td>
-								</tr>
-								<tr>
-									<td id="spec6" class="specSelector"></td>
-								</tr>
-								<tr>
-									<td id="spec7" class="specSelector"></td>
-								</tr>
-								<tr>
-									<td id="spec8" class="specSelector"></td>
+									<td colspan=2><table id='specialtyTable' width=450></table></td>
 								</tr>
 								<tr>
 									<td colspan=2>&nbsp;</td>
