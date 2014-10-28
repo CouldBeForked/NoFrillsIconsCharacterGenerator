@@ -564,7 +564,7 @@
 
 			var enableForm = function(enabled) {
 				var disabled = !enabled;
-				
+
 				$("#charId").prop('disabled', disabled);
 				$("#value").prop('disabled', disabled);
 				$("#charImgUrl").prop('disabled', disabled);
@@ -588,7 +588,6 @@
 
 				$("#powerValue").prop('disabled', disabled);
 			};
-
 
 			var displayDude = function(dude) {
 
@@ -857,7 +856,6 @@
 					addSpecialty(currentDude, qqq);
 					displaySpecialty(currentDude, qqq);
 				});
-
 
 				/*
 				 * load dudes
@@ -1233,169 +1231,174 @@
 		</script>
 
 		<div class='nonprintable'>
-			<h3>Character Generator...</h3>
-			<p>
-				No Frills Character Generator for Icons Assembled RPG. <h4>Features</h4>
-				<ul>
-					<li>
-						Randomly Generates characters as described in the Icons Assembled RPG Book (chapter 2)
-					</li>
-					<li>
-						Supports the Points Buy Generation method described in the Icons Assembled RPG Book (pg68)
-					</li>
-					<li>
-						Saves characters in browser via html5 storage (when supported by browser)
-					</li>
-					<li>
-						Prints a no frills character sheet with plenty of space to calculate stamina, draw character portaits, and take notes
-					</li>
-				</ul>
-				<hr>
-				<table style="height: 600px;">
-					<tr>
-						<th>Sidebar
-						<button onclick="persistDudes();" title='Save ALL characters to Browser Storage' class='mastertooltip'>
-							Save
+			<h3>No Frills Character Generator for Icons Assembled RPG.</h3>
+			<small>27 October 2014</small>
+			<h4>Features</h4>
+			<ul>
+				<li>
+					Build your character from all the standard Power, Extras, Limitations and Specialties
+				</li>
+				<li>
+					Add a Character Description, Qualities, and Power Notes
+				</li>
+				<li>
+					Randomly Generates characters as described in the Icons Assembled RPG Book (chapter 2)
+				</li>
+				<li>
+					Supports the Points Buy Generation method described in the Icons Assembled RPG Book (pg68)
+				</li>
+				<li>
+					Saves characters in browser via html5 storage (when supported by browser)
+				</li>
+				<li>
+					Prints a no frills character sheet with plenty of space to plot, draw, and take notes
+				</li>
+			</ul>
+			<hr>
+			<table style="height: 600px;">
+				<tr>
+					<th>Sidebar
+					<button onclick="persistDudes();" title='Save ALL characters to Browser Storage' class='mastertooltip'>
+						Save
+					</button>
+					<button onclick="deleteSelectedDudes();" title='Delete SELECTED characters from The Sidebar' class='mastertooltip'>
+						Delete
+					</button></th>
+					<th>Character
+					<button onclick="printDude(currentDude)" title='Create a No-frills Character Sheet suitable for printing (opens a new window)' class='mastertooltip'>
+						Print
+					</button>
+					<button onclick="createNew();"  title='Create a new character (for use with the Point-Based Hero Creation)' class='mastertooltip'>
+						New
+					</button><span title='Generate a Random Character based on point level' class='mastertooltip'>
+						<button onclick="generate()">
+							Auto-generate!
 						</button>
-						<button onclick="deleteSelectedDudes();" title='Delete SELECTED characters from The Sidebar' class='mastertooltip'>
-							Delete
-						</button></th>
-						<th>Character
-						<button onclick="printDude(currentDude)" title='Create a No-frills Character Sheet suitable for printing (opens a new window)' class='mastertooltip'>
-							Print
-						</button>
-						<button onclick="createNew();"  title='Create a new character (for use with the Point-Based Hero Creation)' class='mastertooltip'>
-							New
-						</button><span title='Generate a Random Character based on point level' class='mastertooltip'>
-							<button onclick="generate()">
-								Auto-generate!
-							</button>
-							<select id="limit">
-								<option value="0">No Limit</option>
-								<option value="30">30</option>
-								<option value="35">35</option>
-								<option value="40">40</option>
-								<option value="45">45</option>
-								<option value="50">50</option>
-								<option value="55">55</option>
-								<option value="60">60</option>
-							</select> </span></th>
-					</tr>
-					<tr>
-						<td width=150 valign='top'><select id='history' style="width: 20em; height: 600px;"  multiple></select></td>
-						<td valign='top'>
-						<div>
-							<table width=320  style='disabled:true'>
-								<tr>
-									<th width=150>Identification</th>
-									<th width=100>&nbsp;</th>
-								</tr>
-								<tr>
-									<td>Name</td>
-									<td>
-									<input id="charId" type="text" style="width: 15em;">
-									</td>
-								</tr>
-								<tr>
-									<td>Profile Pic URL</td>
-									<td>
-									<input id="charImgUrl" type="text" style="width: 15em;">
-									</td>
-								</tr>
-								<tr>
-									<td>Points</td>
-									<td id="value"></td>
-								</tr>
-								<tr>
-									<td colspan=2>&nbsp;</td>
-								</tr>
-								<tr>
-									<th colspan=2>Origin</th>
-								</tr>
-								<tr>
-									<td colspan=2 id="origin"></td>
-								</tr>
-								<tr>
-									<td colspan=2>									<textarea id="originDescription" name="textarea" rows="10" cols="55"> </textarea></td>
-								</tr>
-								<tr>
-									<td colspan=2>&nbsp;</td>
-								</tr>
-								<tr>
-									<th colspan=2>Attributes (<span id='attributeValue'> </span>) </th>
-								</tr>
-								<tr>
-									<td>Prowess</td>
-									<td id="prowess" class="power"></td>
-								</tr>
-								<tr>
-									<td>Coordination</td>
-									<td id="coordination" class="power"></td>
-								</tr>
-								<tr>
-									<td>Strength</td>
-									<td id="strength" class="power"></td>
-								</tr>
-								<tr>
-									<td>Intellect</td>
-									<td id="intellect" class="power"></td>
-								</tr>
-								<tr>
-									<td>Awareness</td>
-									<td id="awareness" class="power"></td>
-								</tr>
-								<tr>
-									<td>Willpower</td>
-									<td id="willpower" class="power"></td>
-								</tr>
-								<tr>
-									<td colspan=2>&nbsp;</td>
-								</tr>
-								<tr>
-									<th colspan=2>Powers (<span id='powerValue'></span>)
-									<button id="addPower">
-										+
-									</button></th>
-								</tr>
-								<tr>
-									<td colspan=2><table id='powerTable' width=450></table></td>
-								</tr>
-								<tr>
-									<td colspan=2>&nbsp;</td>
-								</tr>
-								<tr>
-									<th colspan=2>Specialties (<span id='specValue'></span>)
-									<button id="addSpecialty">
-										+
-									</button></th>
-								</tr>
-								<tr>
-									<td colspan=2><table id='specialtyTable' width=450></table></td>
-								</tr>
-								<tr>
-									<td colspan=2>&nbsp;</td>
-								</tr>
-								<tr>
-									<td colspan=2 id="origin">Qualities</td>
-								</tr>
-								<tr>
-									<td colspan=2>									<textarea id="quality1" name="textarea" rows="2" cols="46"></textarea></td>
-								</tr>
-								<tr>
-									<td colspan=2>									<textarea id="quality2" name="textarea" rows="2" cols="46"></textarea></td>
-								</tr>
-								<tr>
-									<td colspan=2>									<textarea id="quality3" name="textarea" rows="2" cols="46"></textarea></td>
-								</tr>
-							</table>
-						</div></td>
-						<td valign=top>
-						<div>
-							<img id="picture" width=320 />
-						</div></td>
-					</tr>
-				</table>
-				<div id='log'></div>
+						<select id="limit">
+							<option value="0">No Limit</option>
+							<option value="30">30</option>
+							<option value="35">35</option>
+							<option value="40">40</option>
+							<option value="45">45</option>
+							<option value="50">50</option>
+							<option value="55">55</option>
+							<option value="60">60</option>
+						</select> </span></th>
+				</tr>
+				<tr>
+					<td width=150 valign='top'><select id='history' style="width: 20em; height: 600px;"  multiple></select></td>
+					<td valign='top'>
+					<div>
+						<table width=320  style='disabled:true'>
+							<tr>
+								<th colspan=2>Identification</th>
+							</tr>
+							<tr>
+								<td>Name</td>
+								<td>
+								<input id="charId" type="text" style="width: 15em;">
+								</td>
+							</tr>
+							<tr>
+								<td>Profile Pic URL</td>
+								<td>
+								<input id="charImgUrl" type="text" style="width: 15em;">
+								</td>
+							</tr>
+							<tr>
+								<td>Points</td>
+								<td id="value"></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Origin</th>
+							</tr>
+							<tr>
+								<td colspan=2 id="origin"></td>
+							</tr>
+							<tr>
+								<td colspan=2>								<textarea id="originDescription" name="textarea" rows="10" cols="55"> </textarea></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Attributes (<span id='attributeValue'> </span>) </th>
+							</tr>
+							<tr>
+								<td>Prowess</td>
+								<td id="prowess" class="power"></td>
+							</tr>
+							<tr>
+								<td>Coordination</td>
+								<td id="coordination" class="power"></td>
+							</tr>
+							<tr>
+								<td>Strength</td>
+								<td id="strength" class="power"></td>
+							</tr>
+							<tr>
+								<td>Intellect</td>
+								<td id="intellect" class="power"></td>
+							</tr>
+							<tr>
+								<td>Awareness</td>
+								<td id="awareness" class="power"></td>
+							</tr>
+							<tr>
+								<td>Willpower</td>
+								<td id="willpower" class="power"></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Powers (<span id='powerValue'></span>)
+								<button id="addPower">
+									+
+								</button></th>
+							</tr>
+							<tr>
+								<td colspan=2><table id='powerTable' width=450></table></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<th colspan=2>Specialties (<span id='specValue'></span>)
+								<button id="addSpecialty">
+									+
+								</button></th>
+							</tr>
+							<tr>
+								<td colspan=2><table id='specialtyTable' width=450></table></td>
+							</tr>
+							<tr>
+								<td colspan=2>&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan=2 id="origin">Qualities</td>
+							</tr>
+							<tr>
+								<td colspan=2>								<textarea id="quality1" name="textarea" rows="2" cols="46"></textarea></td>
+							</tr>
+							<tr>
+								<td colspan=2>								<textarea id="quality2" name="textarea" rows="2" cols="46"></textarea></td>
+							</tr>
+							<tr>
+								<td colspan=2>								<textarea id="quality3" name="textarea" rows="2" cols="46"></textarea></td>
+							</tr>
+						</table>
+					</div></td>
+					<td valign=top>
+					<div>
+						<img id="picture" width=320 />
+					</div></td>
+				</tr>
+			</table>
+			<div id='log'></div>
 		</div>
 		<div id="print-template" style="display:none">
 			<div class="printable">
