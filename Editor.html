@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 	<head>
@@ -145,7 +146,7 @@
 				$("#print_seed").text(dude.name);
 				$("#print_level").text(dude.value);
 
-				if ($.isEmptyObject(dude.img)) {
+				if ($.isEmptyObject(dude.img) || dude.img === "") {
 					$("#print_img").attr("src", TRANSPARENT_IMAGE);
 				} else {
 					$("#print_img").attr("src", dude.img);
@@ -155,6 +156,7 @@
 
 			function supports_html5_storage() {
 				try {
+					var dudeString = localStorage["dudes"];
 					return 'localStorage' in window && window['localStorage'] !== null;
 				} catch (e) {
 					return false;
@@ -569,8 +571,6 @@
 				$("#value").prop('disabled', disabled);
 				$("#charImgUrl").prop('disabled', disabled);
 
-				$("#picture").attr("src", TRANSPARENT_IMAGE);
-
 				$("#attributeValue").prop('disabled', disabled);
 				$("#origin").prop('disabled', disabled);
 				$("#originDescription").prop('disabled', disabled);
@@ -587,6 +587,8 @@
 				$("#willpower>select").prop('disabled', disabled);
 
 				$("#powerValue").prop('disabled', disabled);
+
+				$("#SaveButton").prop('disabled', !supports_html5_storage());
 			};
 
 			var displayDude = function(dude) {
@@ -595,8 +597,8 @@
 				$("#value").text(dude.value);
 				$("#charImgUrl").val(dude.img);
 
-				if ($.isEmptyObject(dude.img)) {
-					$("#picture").attr("src", "");
+				if ($.isEmptyObject(dude.img) || dude.img ==="" ) {
+					$("#picture").attr("src", TRANSPARENT_IMAGE);
 				} else {
 					$("#picture").attr("src", dude.img);
 				}
@@ -701,6 +703,7 @@
 					entry.click(function() {
 						currentDude = dude;
 						displayDude(dude);
+						enableForm(true);
 					});
 
 					entry.hover(function() {
@@ -899,6 +902,7 @@
 						});
 						refreshDudeList();
 					}
+
 				}
 				enableForm(false);
 			});
@@ -1258,7 +1262,7 @@
 			<table style="height: 600px;">
 				<tr>
 					<th>Sidebar
-					<button onclick="persistDudes();" title='Save ALL characters to Browser Storage' class='mastertooltip'>
+					<button id="SaveButton" onclick="persistDudes();" title='Save ALL characters to Browser Storage' class='mastertooltip'>
 						Save
 					</button>
 					<button onclick="deleteSelectedDudes();" title='Delete SELECTED characters from The Sidebar' class='mastertooltip'>
@@ -1270,10 +1274,8 @@
 					</button>
 					<button onclick="createNew();"  title='Create a new character (for use with the Point-Based Hero Creation)' class='mastertooltip'>
 						New
-					</button><span title='Generate a Random Character based on point level' class='mastertooltip'>
-						<button onclick="generate()">
-							Auto-generate!
-						</button>
+					</button><span style="outline: lightgrey solid thin;padding: 4px 4px 8px 2px; margin: 0px 0px 0px 25px;" title='Generate a Random Character based on the specified point limit' class='mastertooltip'>
+						<button onclick="generate()">Auto-generate!</button>
 						<select id="limit">
 							<option value="0">No Limit</option>
 							<option value="30">30</option>
@@ -1283,7 +1285,7 @@
 							<option value="50">50</option>
 							<option value="55">55</option>
 							<option value="60">60</option>
-						</select> </span></th>
+						</select></span></th>
 				</tr>
 				<tr>
 					<td width=150 valign='top'><select id='history' style="width: 20em; height: 600px;"  multiple></select></td>
@@ -1499,7 +1501,6 @@
 						<table id="print_specialtyTable" width=320>
 							<tr>
 								<th colspan=2>Specialties (<span id='print_specValue'></span>) </th>
-								</th>
 							<tr>
 								<td colspan=2 id="print_specialties"></td>
 							</tr>
