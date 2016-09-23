@@ -640,6 +640,7 @@
 			var generate = function() {
 				enableForm(true);
 				var pointLimit = 0;
+				pointLimit = $( "#limit" ).val();
 				var dude = buildDude(seed);
 
 				while (pointLimit != 0 && dude.value != pointLimit) {
