@@ -193,11 +193,11 @@
 			var originDescription = [];
 			originDescription[''] = '';
 			originDescription['Trained'] = 'The hero is a highly skilled individual; any powers actually come from superior training or specialized equipmentof your choice (attribute or power) is increased by +2 to a maximum of 10.';
-			originDescription['Transformed'] = 'The hero was a normal human but became superhuman through some outside agency, often an accident or experiment. One of the character’s abilities of your choice (attribute or power) is increased by +2 to a maximum of 10.';
-			originDescription['Birthright'] = 'The hero was born with or destined to develop superhuman powers. The character gains your choice of one additional power—which should be innate, and not a device—or +2 to a rolled power level of your choice, to a maximum of 10.';
-			originDescription['Gimmick'] = 'The character’s powers all come from devices of some kind. One of the character’s mental attributes of your choice is increased by +2, to a maximum of 10.';
-			originDescription['Artificial'] = 'The character is a robot or some other kind of construct, such as a golem. The character’s Strength is increased by +2 and has the Life Support power in addition to any rolled powers; roll Life Support level normally, or trade a rolled power to increase it to 10.';
-			originDescription['Unearthly'] = 'The character is an alien, elemental, angel, devil, or even deity — a being from another world or dimension. Increase two of the character’s abilities of your choice (attributes or powers) by +2. Alternately, roll twice on this table, ignoring duplicates and results of 11-12. The character gets the effects of both origins. Apply the modifiers of the rolled origins rather than the Unearthly modifiers.';
+			originDescription['Transformed'] = 'The hero was a normal human but became superhuman through some outside agency, often an accident or experiment. One of the characterÂ’s abilities of your choice (attribute or power) is increased by +2 to a maximum of 10.';
+			originDescription['Birthright'] = 'The hero was born with or destined to develop superhuman powers. The character gains your choice of one additional powerÂ—which should be innate, and not a deviceÂ—or +2 to a rolled power level of your choice, to a maximum of 10.';
+			originDescription['Gimmick'] = 'The characterÂ’s powers all come from devices of some kind. One of the characterÂ’s mental attributes of your choice is increased by +2, to a maximum of 10.';
+			originDescription['Artificial'] = 'The character is a robot or some other kind of construct, such as a golem. The characterÂ’s Strength is increased by +2 and has the Life Support power in addition to any rolled powers; roll Life Support level normally, or trade a rolled power to increase it to 10.';
+			originDescription['Unearthly'] = 'The character is an alien, elemental, angel, devil, or even deity Â— a being from another world or dimension. Increase two of the characterÂ’s abilities of your choice (attributes or powers) by +2. Alternately, roll twice on this table, ignoring duplicates and results of 11-12. The character gets the effects of both origins. Apply the modifiers of the rolled origins rather than the Unearthly modifiers.';
 
 			var allSpecialties = specialties.unique().sort();
 
@@ -607,11 +607,11 @@
 				if ($.isEmptyObject(dude.description)) {
 					dude.description = "";
 				}
-				$("#originDescription").text(dude.description);
+				$("#originDescription").val(dude.description);
 
-				$("#quality1").text(dude.quality1);
-				$("#quality2").text(dude.quality2);
-				$("#quality3").text(dude.quality3);
+				$("#quality1").val(dude.quality1);
+				$("#quality2").val(dude.quality2);
+				$("#quality3").val(dude.quality3);
 
 				$("#prowess>select").val(dude.prowess);
 				$("#coordination>select").val(dude.coordination);
@@ -640,6 +640,7 @@
 			var generate = function() {
 				enableForm(true);
 				var pointLimit = 0;
+				pointLimit = parseInt($( "#limit" ).val(),10);
 				var dude = buildDude(seed);
 
 				while (pointLimit != 0 && dude.value != pointLimit) {
