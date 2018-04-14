@@ -4,10 +4,30 @@
 	<head>
 		<title>No Frills ICONS Character Generator</title>
 		<style>
-			option.hover {
-				background: black;
+			-webkit-appearance: none;
+			
+			ul {
+			  list-style-type: none;
+			}	
+			
+			li {
+				display: block;
+				padding: 10px;
+			}
+
+			ul#history li:nth-child(even) {background: #CCC}
+			ul#history li:nth-child(odd) {background: #FFF}
+			
+			ul#history li.hov {
+				font-weight:bold;
+			}
+			
+			ul#history li.selt {
+				background-color:#2E86C1  ;
 				color: white;
 			}
+			
+			
 			select.modElement {
 				width: 200px;
 			}
@@ -193,11 +213,11 @@
 			var originDescription = [];
 			originDescription[''] = '';
 			originDescription['Trained'] = 'The hero is a highly skilled individual; any powers actually come from superior training or specialized equipmentof your choice (attribute or power) is increased by +2 to a maximum of 10.';
-			originDescription['Transformed'] = 'The hero was a normal human but became superhuman through some outside agency, often an accident or experiment. One of the characters abilities of your choice (attribute or power) is increased by +2 to a maximum of 10.';
-			originDescription['Birthright'] = 'The hero was born with or destined to develop superhuman powers. The character gains your choice of one additional powerwhich should be innate, and not a deviceor +2 to a rolled power level of your choice, to a maximum of 10.';
-			originDescription['Gimmick'] = 'The characters powers all come from devices of some kind. One of the characters mental attributes of your choice is increased by +2, to a maximum of 10.';
-			originDescription['Artificial'] = 'The character is a robot or some other kind of construct, such as a golem. The characters Strength is increased by +2 and has the Life Support power in addition to any rolled powers; roll Life Support level normally, or trade a rolled power to increase it to 10.';
-			originDescription['Unearthly'] = 'The character is an alien, elemental, angel, devil, or even deity  a being from another world or dimension. Increase two of the characters abilities of your choice (attributes or powers) by +2. Alternately, roll twice on this table, ignoring duplicates and results of 11-12. The character gets the effects of both origins. Apply the modifiers of the rolled origins rather than the Unearthly modifiers.';
+			originDescription['Transformed'] = "The hero was a normal human but became superhuman through some outside agency, often an accident or experiment. One of the character's abilities of your choice (attribute or power) is increased by +2 to a maximum of 10.";
+			originDescription['Birthright'] = 'The hero was born with or destined to develop superhuman powers. The character gains your choice of one additional power (which should be innate, and not a device) or +2 to a rolled power level of your choice, to a maximum of 10.';
+			originDescription['Gimmick'] = "The character's powers all come from devices of some kind. One of the character's mental attributes of your choice is increased by +2, to a maximum of 10.";
+			originDescription['Artificial'] = "The character is a robot or some other kind of construct, such as a golem. The character's Strength is increased by +2 and has the Life Support power in addition to any rolled powers; roll Life Support level normally, or trade a rolled power to increase it to 10.";
+			originDescription['Unearthly'] = "The character is an alien, elemental, angel, devil, or even deity - a being from another world or dimension. Increase two of the character's abilities of your choice (attributes or powers) by +2. Alternately, roll twice on this table, ignoring duplicates and results of 11-12. The character gets the effects of both origins. Apply the modifiers of the rolled origins rather than the Unearthly modifiers.";
 
 			var allSpecialties = specialties.unique().sort();
 
@@ -696,14 +716,14 @@
 				});
 
 				entry.hover(function() {
-					entry.addClass("hover");
+					entry.addClass(".hov");
 				}, function() {
-					entry.removeClass("hover");
+					entry.removeClass(".hov");
 				});
 			};
 
 			var debug = function(l) {
-				var log = $('#log').append("<div>" + l + "</div");
+				var log = $('#log').append("<div>" + l + "</div>");
 			};
 
 			/*
@@ -713,19 +733,24 @@
 				$("#history").empty();
 				$.each(dudes, function(index, dude) {
 					var col = $('#history');
-					var entry = $("<option value='" + dude.id + "'>" + dude.name + "</option>");
+					//var entry = $("<option value='" + dude.id + "'>" + dude.name + "</option>");
+					var entry = $("<li value='" + dude.id + "'>" + dude.name + "</li>");
 					col.append(entry);
 
-					entry.click(function() {
+					entry.click(function(e) {
 						currentDude = dude;
 						displayDude(dude);
+						if (!e.ctrlKey) {
+							$("li.selt").removeClass("selt");
+						}
+						entry.addClass("selt")
 						enableForm(true);
 					});
 
 					entry.hover(function() {
-						entry.addClass("hover");
+						entry.addClass("hov");
 					}, function() {
-						entry.removeClass("hover");
+						entry.removeClass("hov");
 					});
 				});
 			};
@@ -760,8 +785,13 @@
 
 			var deleteSelectedDudes = function() {
 
-				var selected = $("#history").val();
+				var selected = [];
+				var s = $("li.selt"); 
+				$.each(s, function (i, item) {
+					selected.push(item.getAttribute("value"));
+				});
 
+				
 				selected.forEach(function(dudeId) {
 					dudes = dudes.filter(function(e) {
 						return e.id != dudeId;
@@ -1279,10 +1309,10 @@
 				<tr>
 					<td align=center><b>Sidebar</b>
 					<button id="SaveButton" onclick="persistDudes();" title='Save ALL characters to Browser Storage' class='mastertooltip'>
-						Save
+						Save to Cookie
 					</button>
 					<button onclick="deleteSelectedDudes();" title='Delete SELECTED characters from The Sidebar' class='mastertooltip'>
-						Delete
+						Delete Selected
 					</button></td>
 					<td align=center><b>Character</b><span style="outline: lightgrey solid thin;padding: 4px 4px 8px 2px; margin: 0px 25px 0px 5px;" title='Generate a Random Character based on the specified point limit' class='mastertooltip'>
 						<button onclick="create();"  title='Create a new character (for use with the Point-Based Hero Creation)' class='mastertooltip'>
@@ -1302,12 +1332,14 @@
 							<option value="55">55</option>
 							<option value="60">60</option>
 						</select></span>
-					<button id="print"  onclick="printDude(currentDude)" title='Create a No-frills Character Sheet suitable for printing (opens a new window)' class='mastertooltip'>
-						Print
+					<button id="print"  onclick="printDude(currentDude)" title='Create a No-frills Character Sheet suitable for printing (opens a new window)' class='mastertooltip'>Print
 					</button></td>
 				</tr>
 				<tr>
-					<td width=150 valign='top'><select id='history' style="width: 20em; height: 600px;"  multiple></select></td>
+					<td width=150 valign='top'>
+					<!-- <select id='history' style="width: 20em; height: 600px;"  multiple></select> -->
+					<ul id='history' style="width: 20em; height: 600px; overflow: auto;" ></ul>
+					</td>
 					<td valign='top'>
 					<div>
 						<table width=320  style='disabled:true'>
