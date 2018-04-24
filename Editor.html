@@ -553,32 +553,32 @@
 
 			// add the row to the table
 			var rowTemplate = '<table><tr>';
-			rowTemplate += '<td><button class="powerDelete">-</button></td>';
+			rowTemplate += '<td><button class="powerDelete" title="Delete This Power" class="mastertooltip">-</button></td>';
 			rowTemplate += '<td class="powerSelector"></td>';
 			rowTemplate += '<td class="powerLevel"></td>';
-			rowTemplate += '<td><button class="addExtra">E+</button>';
-			rowTemplate += '<button class="addLimitation">L+</button>';
-			rowTemplate += '<button class="addNote">N+</button></td>';
+			rowTemplate += '<td><button class="addExtra" title="Add an Extra" class="mastertooltip">E+</button>';
+			rowTemplate += '<button class="addLimitation" title="Add a Limitation" class="mastertooltip">L+</button>';
+			rowTemplate += '<button class="addNote" title="Add a Note" class="mastertooltip">N+</button></td>';
 			rowTemplate += '</tr><tr><td colspan=5><table class="modifiers"></table></td>';
 			rowTemplate += '</tr></table>';
 
 			var extraTemplate = '<tr>';
 			extraTemplate += '<td>&nbsp;</td>';
-			extraTemplate += '<td><button class="extraDelete">-</button></td>';
+			extraTemplate += '<td><button class="extraDelete" title="Delete This Extra" class="mastertooltip">-</button></td>';
 			extraTemplate += '<td>Extra:</td>';
 			extraTemplate += '<td class="extraSelector"></td>';
 			extraTemplate += '</tr>';
 
 			var limitationTemplate = '<tr>';
 			limitationTemplate += '<td>&nbsp;</td>';
-			limitationTemplate += '<td><button class="limitationDelete">-</button></td>';
+			limitationTemplate += '<td><button class="limitationDelete" title="Delete This Limitation" class="mastertooltip">-</button></td>';
 			limitationTemplate += '<td>Limitation:</td>';
 			limitationTemplate += '<td class="limitationSelector"></td>';
 			limitationTemplate += '</tr>';
 
 			var noteTemplate = '<tr>';
 			noteTemplate += '<td>&nbsp;</td>';
-			noteTemplate += '<td><button class="noteDelete">-</button></td>';
+			noteTemplate += '<td><button class="noteDelete" title="Delete This Note" class="mastertooltip">-</button></td>';
 			noteTemplate += '<td>Note:</td>';
 			noteTemplate += '<td class="noteText"></td>';
 			noteTemplate += '</tr>';
@@ -606,6 +606,8 @@
 				$("#willpower>select").prop('disabled', disabled);
 
 				$("#powerValue").prop('disabled', disabled);
+				$("#print").prop('disabled', disabled);
+				
 
 				$("#SaveButton").prop('disabled', !supports_html5_storage());
 			};
@@ -1237,7 +1239,7 @@
 
 			var displaySpecialty = function(dude, spec) {
 				var rt = "<tr>";
-				rt += "<td><button class='specialtyDelete'>-</button></td>";
+				rt += "<td><button class='specialtyDelete' title='Delete This Specialty' class='mastertooltip'>-</button></td>";
 				rt += "<td class='specialtySelector'></td></tr>";
 
 				var row = $(rt);
@@ -1282,69 +1284,50 @@
 
 		<div class='nonprintable'>
 			<h3>No Frills Character Generator for Icons Assembled RPG.</h3>
-			<small>27 October 2014</small>
-			<h4>Features</h4>
-			<ul>
-				<li>
-					Build your character from all the standard Powers, Extras, Limitations and Specialties
-				</li>
-				<li>
-					Add a Character Description, Qualities, and Power Notes
-				</li>
-				<li>
-					Randomly generates characters as described in the Icons Assembled RPG Book (chapter 2)
-				</li>
-				<li>
-					Supports the Points Buy Generation method described in the Icons Assembled RPG Book (pg68)
-				</li>
-				<li>
-					Saves characters in browser via html5 storage (when supported by browser. Works in Firefox and Chrome.  Probably won't work in IE.)
-				</li>
-				<li>
-					Prints a no frills character sheet with plenty of space to plot, draw, and take notes
-				</li>
-			</ul>
+			<small>Established: 27 October 2014</small>
 			<hr>
 			<table style="height: 600px;">
 				<tr>
-					<td align=center><b>Sidebar</b>
+					<td align=center><b>Sidebar</b><hr/>
 					<button id="SaveButton" onclick="persistDudes();" title='Save ALL characters to Browser Storage' class='mastertooltip'>
-						Save to Cookie
+						Save Characters to Cookie
 					</button>
-					<button onclick="deleteSelectedDudes();" title='Delete SELECTED characters from The Sidebar' class='mastertooltip'>
-						Delete Selected
+					<button onclick="deleteSelectedDudes();" title='Delete SELECTED Characters' class='mastertooltip'>
+						Delete Selected Characters
 					</button></td>
-					<td align=center><b>Character</b><span style="outline: lightgrey solid thin;padding: 4px 4px 8px 2px; margin: 0px 25px 0px 5px;" title='Generate a Random Character based on the specified point limit' class='mastertooltip'>
-						<button onclick="create();"  title='Create a new character (for use with the Point-Based Hero Creation)' class='mastertooltip'>
-							Create
+					<td>&nbsp;</td>
+					<td align=center><b>Current Character</b><hr/>
+						<button onclick="createNew();"  title='Create a new character (for use with the Point-Based Hero Creation).  Note: Point values for Extras are not included in the cahracters total point value' class='mastertooltip'>
+							New Blank Character
 						</button>
-						<input id="NewChar" name="autogen" type="radio">
-						Blank</input>
-						<input id="autogen" name="autogen" type="radio" checked="checked">
-						Random</input>
-						<select id="limit">
-							<option value="0">No Limit</option>
-							<option value="30">30</option>
-							<option value="35">35</option>
-							<option value="40">40</option>
-							<option value="45">45</option>
-							<option value="50">50</option>
-							<option value="55">55</option>
-							<option value="60">60</option>
-						</select></span>
-					<button id="print"  onclick="printDude(currentDude)" title='Create a No-frills Character Sheet suitable for printing (opens a new window)' class='mastertooltip'>Print
+						<span style="outline: lightgrey solid thin;padding: 4px 4px 8px 2px; margin: 0px 25px 0px 5px;" title='Generate a Random Character based on the specified point limit' class='mastertooltip'>
+							<button onclick="generate();"  title='Create a new random character based on the selected point limit' class='mastertooltip'>
+								New Random Character
+							</button>
+							<select id="limit">
+								<option value="0">No Limit</option>
+								<option value="30">30</option>
+								<option value="35">35</option>
+								<option value="40">40</option>
+								<option value="45">45</option>
+								<option value="50">50</option>
+								<option value="55">55</option>
+								<option value="60">60</option>
+							</select>
+						</span>
+					<button id="print"  onclick="printDude(currentDude)" title='Create a No-frills Character Sheet suitable for printing (opens a new window)' class='mastertooltip'>Print Character
 					</button></td>
 				</tr>
 				<tr>
 					<td width=150 valign='top'>
-					<!-- <select id='history' style="width: 20em; height: 600px;"  multiple></select> -->
 					<ul id='history' style="width: 20em; height: 600px; overflow: auto;" ></ul>
 					</td>
+					<td>&nbsp;</td>
 					<td valign='top'>
 					<div>
 						<table width=320  style='disabled:true'>
 							<tr>
-								<th colspan=2>Identification</th>
+								<th colspan=2 style="padding-top:10px;">Identification</th>
 							</tr>
 							<tr>
 								<td>Name</td>
@@ -1409,7 +1392,7 @@
 							</tr>
 							<tr>
 								<th colspan=2>Powers (<span id='powerValue'></span>)
-								<button id="addPower">
+								<button id="addPower" title='Add a Power' class='mastertooltip'>
 									+
 								</button></th>
 							</tr>
@@ -1421,7 +1404,7 @@
 							</tr>
 							<tr>
 								<th colspan=2>Specialties (<span id='specValue'></span>)
-								<button id="addSpecialty">
+								<button id="addSpecialty" title='Add a Specialty' class='mastertooltip'>
 									+
 								</button></th>
 							</tr>
